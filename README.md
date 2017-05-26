@@ -21,8 +21,3 @@ In order to accomplish the changes described, the following files of the dtdetec
 /dt-detector/src/edu/washington/cs/dt/util/TestRunnerWrapper.java
 /dt-detector/src/edu/washington/cs/dt/util/TestRunnerWrapperFileInputs.java
 /dt-detector/src/edu/washington/cs/dt/main/ImpactMain.java
-
-Figure 4 is generated from running [cloc](https://github.com/AlDanial/cloc) on the
-subjects' source and test directories and 
-[ExamDiff Pro](http://www.prestosoft.com/edp_examdiffpro.asp) between the two 
-revisions of our subjects.
