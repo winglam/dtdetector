@@ -29,13 +29,14 @@ public class IsolationRunner extends AbstractTestRunner {
 	
 	@Override
 	public TestExecResults run() {
+		System.out.println("Executing isolation runner now.");
+
 		TestExecResults result = TestExecResults.createInstance();
 		
 		int count = 1;
 		for(String test : super.junitTestList) {
 			long starttime = System.currentTimeMillis();
 			
-			System.out.println("********** Now executing test: " + test + " **********");
 			Map<String, OneTestExecResult> singleRun = TestExecUtils.executeTestsInFreshJVM(super.getClassPath(),
 					super.getTmpOutputFile(), Collections.singletonList(test));
 			result.addExecutionResults(singleRun);

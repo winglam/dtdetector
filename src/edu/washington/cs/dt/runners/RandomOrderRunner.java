@@ -8,8 +8,6 @@ import java.util.Map;
 
 import edu.washington.cs.dt.OneTestExecResult;
 import edu.washington.cs.dt.TestExecResults;
-import edu.washington.cs.dt.tools.RunTestInFixedOrder;
-import edu.washington.cs.dt.util.Files;
 import edu.washington.cs.dt.util.TestExecUtils;
 import edu.washington.cs.dt.util.Utils;
 
@@ -30,6 +28,8 @@ public class RandomOrderRunner extends AbstractTestRunner {
 
 	@Override
 	public TestExecResults run() {
+		System.out.println("Executing random runner now.");
+
 		List<String> randomizedList = Utils.randomList(super.junitTestList);
 //		if(RunTestInFixedOrder.verbose) {
 //			String testOrderFile = this.inputTestFile + "_order_" + (count++) + ".txt";

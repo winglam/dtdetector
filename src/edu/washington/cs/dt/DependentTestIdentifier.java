@@ -49,22 +49,22 @@ public class DependentTestIdentifier {
 	}
 	
 	public List<TestExecResultsDelta> findDependenceForIsolation() {
-	    //AbstractTestRunner fixedOrderRunner = createFixedOrderRunner();
+	    AbstractTestRunner fixedOrderRunner = createFixedOrderRunner();
 	    AbstractTestRunner isolationRunner = createIsolationRunner();
 	    
-	    //TestExecResults fixedOrderResults = fixedOrderRunner.run();
+	    TestExecResults fixedOrderResults = fixedOrderRunner.run();
 	    TestExecResults isolationResults = isolationRunner.run();
 	    
-	    //List<TestExecResult> foRecords = fixedOrderResults.getExecutionRecords();
-	    //Utils.checkTrue(foRecords.size() == 1, "The fixed order runner only launches JVM once!");
+	    List<TestExecResult> foRecords = fixedOrderResults.getExecutionRecords();
+	    Utils.checkTrue(foRecords.size() == 1, "The fixed order runner only launches JVM once!");
 	    
 	    //see the difference, any behavior difference is treated as dependent tests
-	    TestExecResult intendedResult = isolationResults.getExecutionRecords().get(0);
+	    TestExecResult intendedResult = fixedOrderResults.getExecutionRecords().get(0);
 	    TestExecResultsDifferentior differ = new TestExecResultsDifferentior(intendedResult, isolationResults);
 	    List<TestExecResultsDelta> deltas = differ.diffResults();
 	    
 	    if(!minimize) {
-		//return deltas;
+	    	return deltas;
 	    }
 	    
 	    List<TestExecResultsDelta> minimized = this.minimizeDependentTests(deltas);

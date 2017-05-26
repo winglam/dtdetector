@@ -1,0 +1,46 @@
+#summary User manual for some useful tools in dependent test detection.
+
+= Finding Unit Tests =
+
+Perhaps this is the most useful built-in tool, which could extract a list of unit tests from a given jar  or a dir.
+
+Type: `java -cp ./dtdetector/* edu.washington.cs.dt.tools.UnitTestFinder --help` to get a list of available options.
+
+==Some Useful Options==
+
+The UnitTestFinder extracts a list of unit test methods and outputs them to a file. A typical use is:
+
+{{{
+java -cp ./dtdetector/*:%PATH_TO_THE_TESTED_JAR_OR_DIR%:%PATH_OF_OTHER_DEPENDENT_JARS% edu.washington.cs.dt.tools.UnitTestFinder --pathOrJarFile %PATH_TO_THE_TESTED_JAR_OR_DIR%
+}}}
+
+By default, all extracted unit tests will be output to file: `./allunittests.txt`. You can change that via the option `--outputFileName = NEW_PATH`
+
+By default, UnitTestFinder will extract both JUnit 3.X and 4.X test methods. To extract only JUnit 3.x or 4.X style test methods, you need to explicitly set the flag `--junit3=true` or `--junit4=true`, and set `--junit3and4=false`.
+
+UnitTestFinder uses Java reflection to extract unit tests. However, for some jars, UnitTestFinder may fail to load desirable unit tests due to various reasons, such as ClassInitializationError, etc. To log such information, you can set `--log=PATH_TO_LOG_FILE` to ask UnitTestFinder to dump those error messages.
+
+==Examples==
+
+Download the toy example `junittestsdata.jar` [http://winglam2.web.engr.illinois.edu/tools/2014/junittestsdata.jar here].
+
+Type:
+
+{{{
+java -cp ./dtdetector/*:./junittestsdata.jar edu.washington.cs.dt.tools.UnitTestFinder --pathOrJarFile=./junittestsdata.jar
+}}}
+
+The above command extracts all JUnit 3 and 4 tests as below:
+
+{{{
+edu.washington.cs.dt.samples.SampleJUnit4Tests.aJUnit4_1
+edu.washington.cs.dt.samples.SampleJUnit4Tests.aJUnit4_2
+edu.washington.cs.dt.samples.SampleJUnit4Tests.aJUnit4_3
+edu.washington.cs.dt.samples.SampleJUnit3Tests.testJUnit3_1
+edu.washington.cs.dt.samples.SampleJUnit3Tests.testJUnit3_2
+edu.washington.cs.dt.samples.SampleJUnit3Tests.testJUnit3_3
+}}}
+
+*Note:* the above order is not-guaranteed. It completely depends on the class loading order implemented in a JVM.
+
+You will find different results when setting `--junit3and4=false`, and `--junit3=true`or `--junit4=true`.

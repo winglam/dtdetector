@@ -24,6 +24,8 @@ public class ReversedOrderRunner extends AbstractTestRunner {
 
 	@Override
 	public TestExecResults run() {
+		System.out.println("Executing reverse runner now.");
+
 		List<String> reversedTests = new LinkedList<String>();
 		reversedTests.addAll(super.junitTestList);
 		Collections.reverse(reversedTests);

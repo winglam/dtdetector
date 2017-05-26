@@ -31,6 +31,7 @@ public class CombinatorialRunner extends AbstractTestRunner {
 
 	@Override
 	public TestExecResults run() {
+		System.out.println("Executing combination runner now.");
 		TestExecResults result = TestExecResults.createInstance();
 		//first compute all k-combinations, then observe its outcome
 		//finally record all failed tests (with its prefixed tests)

@@ -77,7 +77,7 @@ public class TestExecUtils {
 
         Process proc = Command.execProc(args, System.out, "", false);
         
-        while (!file.exists() || !exitFile.exists()) {
+        while (!file.exists() && !exitFile.exists()) {
         	try {
         	    Thread.sleep(1000);
         	} catch(InterruptedException ex) {
