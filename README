@@ -1,0 +1,13 @@
+This project is a modified version of DependentTestDetector found at our testisolation repository.
+https://code.google.com/p/testisolation/
+The version present in the repository is from October 3rd, 2013 revision number 454.
+
+In order to output the time tests took to execute changes were made to: 
+/dt-detector/src/edu/washington/cs/dt/OneTestExecResult.java
+/dt-detector/src/edu/washington/cs/dt/runners/FixedOrderRunner.java
+/dt-detector/src/edu/washington/cs/dt/util/TestExecUtils.java
+/dt-detector/src/edu/washington/cs/dt/util/TestRunnerWrapper.java
+/dt-detector/src/edu/washington/cs/dt/util/TestRunnerWrapperFileInputs.java
+/dt-detector/src/edu/washington/cs/dt/main/ImpactMain.java
+These changes allowed DependentTestsImpact to create test parallelization orders based 
+on the time tests took to execute.

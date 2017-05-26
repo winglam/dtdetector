@@ -1,0 +1,15 @@
+org.apache.xml.security.test.external.org.apache.xalan.XPathAPI.XalanBug1425Test.testGood01
+org.apache.xml.security.test.external.org.apache.xalan.XPathAPI.XalanBug1425Test.testGood02
+org.apache.xml.security.test.external.org.apache.xalan.XPathAPI.XalanBug1425Test.testGood03
+org.apache.xml.security.test.external.org.apache.xalan.XPathAPI.XalanBug1425Test.testGood04
+org.apache.xml.security.test.external.org.apache.xalan.XPathAPI.XalanBug1425Test.testGood05
+org.apache.xml.security.test.signature.XMLSignatureInputTest.testSetNodeSetGetOctetStream1
+org.apache.xml.security.test.signature.XMLSignatureInputTest.testIsInitializedWithNodeSet
+org.apache.xml.security.test.signature.XMLSignatureInputTest.testNodeSetIsNotOctetStream
+org.apache.xml.security.test.signature.XMLSignatureInputTest.testNodeSetIsNodeSet
+org.apache.xml.security.test.signature.XMLSignatureInputTest.testSetNodeSetGetNodeSet1
+org.apache.xml.security.test.c14n.helper.C14nHelperTest.testNamespaceIsAbsolute01
+org.apache.xml.security.test.c14n.helper.C14nHelperTest.testNamespaceIsAbsolute02
+org.apache.xml.security.test.c14n.helper.C14nHelperTest.testNamespaceIsAbsolute03
+org.apache.xml.security.test.c14n.helper.C14nHelperTest.testNamespaceIsRelative01
+org.apache.xml.security.test.c14n.helper.C14nHelperTest.testNamespaceIsRelative02

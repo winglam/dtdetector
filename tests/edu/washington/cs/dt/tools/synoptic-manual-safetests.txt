@@ -1,0 +1,12 @@
+dynoptic.invariants.checkers.CheckersTests.checkAFby
+dynoptic.invariants.checkers.CheckersTests.checkNFby
+dynoptic.invariants.checkers.CheckersTests.checkAP
+dynoptic.model.fifosys.cfsm.CFSMStateTests.createCFSMState
+dynoptic.model.fifosys.cfsm.CFSMStateTests.createCFSMStateWithTxns
+dynoptic.model.fifosys.cfsm.fsm.FSMStateTests.oneTransition
+dynoptic.model.fifosys.cfsm.fsm.FSMStateTests.twoTransitions
+dynoptic.model.fifosys.cfsm.fsm.FSMStateTests.wrongEventPid
+dynoptic.model.fifosys.gfsm.observed.ObsDistEventTypeTests.buildInstance
+dynoptic.model.fifosys.gfsm.observed.ObsDistEventTypeTests.traceIds
+dynoptic.model.fifosys.gfsm.observed.ObsDistEventTypeTests.equality
+mcscm.McScMTests.testEmptyScmInput
