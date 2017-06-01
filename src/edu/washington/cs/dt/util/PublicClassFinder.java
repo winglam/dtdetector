@@ -39,7 +39,7 @@ public class PublicClassFinder {
 	}
 	
 	public static void main(String[] args) throws ZipException, ClassNotFoundException, IOException {
-		String jarName = "/Users/winglam/GoogleDrive/research/dt-impact/tools/randoop/experiment-inputs-outputs/xml-security-without-tests.jar";
+		String jarName = args[0];
 		PublicClassFinder finder = new PublicClassFinder();
 		List<String> clzList = finder.getAllNonInnerPublicClassesFromJar(new File(jarName));
 		System.out.println(clzList.size());
