@@ -42,7 +42,6 @@ public class PublicClassFinder {
 		String jarName = args[0];
 		PublicClassFinder finder = new PublicClassFinder();
 		List<String> clzList = finder.getAllNonInnerPublicClassesFromJar(new File(jarName));
-		System.out.println(clzList.size());
 		for(String c : clzList) {
 			System.out.println(c);
 		}
