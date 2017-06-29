@@ -17,6 +17,7 @@ import edu.washington.cs.dt.TestExecResults;
 import edu.washington.cs.dt.runners.AbstractTestRunner;
 import edu.washington.cs.dt.runners.FixedOrderRunner;
 import edu.washington.cs.dt.runners.RandomOrderRunner;
+import edu.washington.cs.dt.util.TestExecUtils;
 
 public class ImpactMain {
 
@@ -72,6 +73,9 @@ public class ImpactMain {
         }
 
         boolean randomize = argsList.contains("-randomize");
+
+        boolean do_not_fork_test_execution = argsList.contains("-doNotForkTestExecution");
+        TestExecUtils.fork_test_execution = !do_not_fork_test_execution;
 
         AbstractTestRunner runner;
         if (randomize) {

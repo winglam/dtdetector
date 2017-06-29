@@ -4,6 +4,7 @@
 package edu.washington.cs.dt.util;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,6 +37,8 @@ public class TestExecUtils {
     public static String lockFile = "LOCK_FILE";
     public static String exitFileName = "EXIT_FILE";
 
+    public static boolean fork_test_execution = true;
+
     /*
      * Executes a list of tests in order by launching a fresh JVM, and
      * returns the result of each test.
@@ -43,13 +46,33 @@ public class TestExecUtils {
      * The test is in the form of packageName.className.methodName
      * */
     public static Map<String, OneTestExecResult> executeTestsInFreshJVM(String classPath, String outputFile, List<String> tests) {
+    	if (fork_test_execution) {
+    		return executeTestsInFreshJVMForkTestExecution(classPath, outputFile, tests);
+    	} else {
+    		List<String> commandList = new LinkedList<String>();
+    		Files.createIfNotExistNoExp(testsfile);
+    		Files.writeToFileWithNoExp(tests, testsfile);
+    		commandList.add(outputFile);
+    		commandList.add(testsfile);
+
+    		String[] args = commandList.toArray(new String[0]);
+    		try {
+    			TestRunnerWrapperFileInputs.main(args);
+    		} catch (IOException e) {
+    			e.printStackTrace();
+    		}
+    		Map<String, OneTestExecResult> testResults = parseTestResults(outputFile);
+    		Utils.checkTrue(tests.size() == testResults.size(), "Test num not equal. Results is size " + testResults.size() + ". Tests is size " + tests.size() + ".");
+    		return testResults;
+    	}
+    }
+
+    public static Map<String, OneTestExecResult> executeTestsInFreshJVMForkTestExecution(String classPath, String outputFile, List<String> tests) {
 
         List<String> commandList = new LinkedList<String>();
         commandList.add("java");
         commandList.add("-cp");
         commandList.add(classPath + Globals.pathSep + System.getProperties().getProperty("java.class.path", null));
-//        commandList.add(classPath + Globals.pathSep + System.getProperties().getProperty("java.class.path", null) + "/Users/winglam/GoogleDrive/research/dt-impact/experiments/experiments/crystalvc/impact-tools/*:/Users/winglam/GoogleDrive/research/dt-impact/experiments/experiments/crystalvc/bin/");
-//        commandList.add(classPath + Globals.pathSep + System.getProperties().getProperty("java.class.path", null) + "/mnt/hgfs/winglam/GoogleDrive/research/dt-impact/experiments/experiments/crystalvc/impact-tools/*:/mnt/hgfs/winglam/GoogleDrive/research/dt-impact/experiments/experiments/crystalvc/bin/");
 
         if(tests.size() < threshhold) {
             commandList.add("edu.washington.cs.dt.util.TestRunnerWrapper");
@@ -76,7 +99,7 @@ public class TestExecUtils {
     	}
 
         Process proc = Command.execProc(args, System.out, "", false);
-        
+
         while (!file.exists() && !exitFile.exists()) {
         	try {
         	    Thread.sleep(1000);
@@ -84,9 +107,9 @@ public class TestExecUtils {
         	    Thread.currentThread().interrupt();
         	}
         }
-        
+
         proc.destroy();
-            	
+
         if (exitFile.exists()) {
         	try {
         		file.delete();
@@ -104,7 +127,7 @@ public class TestExecUtils {
         		e.printStackTrace();
         	}
         }
-    	
+
         Map<String, OneTestExecResult> testResults = parseTestResults(outputFile);
 
         Utils.checkTrue(tests.size() == testResults.size(), "Test num not equal. Results is size " + testResults.size() + ". Tests is size " + tests.size() + ".");
