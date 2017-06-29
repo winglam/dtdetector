@@ -54,15 +54,21 @@ public class TestExecUtils {
     		Files.writeToFileWithNoExp(tests, testsfile);
     		commandList.add(outputFile);
     		commandList.add(testsfile);
+    		commandList.add("true");
 
     		String[] args = commandList.toArray(new String[0]);
+    		int testsExecuted = 0;
     		try {
-    			TestRunnerWrapperFileInputs.main(args);
+    			testsExecuted = TestRunnerWrapperFileInputs.runTests(args);
+    	        File exitFile = new File(exitFileName);
+    			File file = new File(lockFile);
+	    		file.delete();
+	    		exitFile.delete();
     		} catch (IOException e) {
     			e.printStackTrace();
     		}
     		Map<String, OneTestExecResult> testResults = parseTestResults(outputFile);
-    		Utils.checkTrue(tests.size() == testResults.size(), "Test num not equal. Results is size " + testResults.size() + ". Tests is size " + tests.size() + ".");
+    		Utils.checkTrue(testsExecuted == testResults.size(), "Test num not equal. Results is size " + testResults.size() + ". Tests is size " + testsExecuted + ".");
     		return testResults;
     	}
     }
@@ -74,18 +80,18 @@ public class TestExecUtils {
         commandList.add("-cp");
         commandList.add(classPath + Globals.pathSep + System.getProperties().getProperty("java.class.path", null));
 
-        if(tests.size() < threshhold) {
-            commandList.add("edu.washington.cs.dt.util.TestRunnerWrapper");
-            commandList.add(outputFile);
-            commandList.addAll(tests);
-        } else {
-            Files.createIfNotExistNoExp(testsfile);
-            Files.writeToFileWithNoExp(tests, testsfile);
+//        if(tests.size() < threshhold) {
+//            commandList.add("edu.washington.cs.dt.util.TestRunnerWrapper");
+//            commandList.add(outputFile);
+//            commandList.addAll(tests);
+//        } else {
+        Files.createIfNotExistNoExp(testsfile);
+        Files.writeToFileWithNoExp(tests, testsfile);
 
-            commandList.add("edu.washington.cs.dt.util.TestRunnerWrapperFileInputs");
-            commandList.add(outputFile);
-            commandList.add(testsfile);
-        }
+        commandList.add("edu.washington.cs.dt.util.TestRunnerWrapperFileInputs");
+        commandList.add(outputFile);
+        commandList.add(testsfile);
+//        }
 
         String[] args = commandList.toArray(new String[0]);
 
