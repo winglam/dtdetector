@@ -58,16 +58,22 @@ public class TestExecUtils {
 
     		String[] args = commandList.toArray(new String[0]);
     		int testsExecuted = 0;
+    		Map<String, OneTestExecResult> testResults = null;
     		try {
     			testsExecuted = TestRunnerWrapperFileInputs.runTests(args);
-    	        File exitFile = new File(exitFileName);
+        		testResults = parseTestResults(outputFile);
+
+    			File exitFile = new File(exitFileName);
     			File file = new File(lockFile);
 	    		file.delete();
 	    		exitFile.delete();
+    	        File tmpFile = new File(outputFile);
+    			File tmpTestfile = new File(testsfile);
+    			tmpFile.delete();
+    			tmpTestfile.delete();
     		} catch (IOException e) {
     			e.printStackTrace();
     		}
-    		Map<String, OneTestExecResult> testResults = parseTestResults(outputFile);
     		Utils.checkTrue(testsExecuted == testResults.size(), "Test num not equal. Results is size " + testResults.size() + ". Tests is size " + testsExecuted + ".");
     		return testResults;
     	}
