@@ -3,11 +3,14 @@
  */
 package edu.washington.cs.dt.util;
 
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.regex.Pattern;
 
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
+import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
 
 import edu.washington.cs.dt.RESULT;
@@ -28,6 +31,12 @@ class JUnitTestExecutor {
 	public final String junitMethod;
 	public final String fullMethodName;
 	
+	private static final PrintStream EMPTY_STREAM = new PrintStream(new OutputStream() {
+		public void write(int b) {
+			//DO NOTHING
+		}
+	});
+
 	//package.class.method
 	public JUnitTestExecutor(String fullMethodName) throws ClassNotFoundException {
 		this.fullMethodName = fullMethodName;
@@ -51,17 +60,33 @@ class JUnitTestExecutor {
 			throw new RuntimeException(e);
 		}
 	}
+
+	public boolean isClassCompatible() {
+		RunWith annotations = junitTest.getAnnotation(RunWith.class);
+		return annotations == null || !annotations.value().getName().equals("org.junit.runners.Parameterized");
+	}
 	
 	public JUnitTestExecutor(Class<?> junitTest, String junitMethod) {
 		this.junitTest = junitTest;
 		this.junitMethod = junitMethod;
 		this.fullMethodName = this.junitTest.getName() + "." + junitMethod;
 	}
-	
+
 	public void executeWithJUnit4Runner() {
         JUnitCore core = new JUnitCore();
+
 		Request r = Request.method(this.junitTest, this.junitMethod);
+
+		PrintStream currOut = System.out;
+		PrintStream currErr = System.err;
+
+		System.setOut(EMPTY_STREAM);
+		System.setErr(EMPTY_STREAM);
 		Result re = core.run(r);
+
+		System.setOut(currOut);
+		System.setErr(currErr);
+
 		//FIXME the run count can be > 1, e.g., testLazy in hibernate
 		if(re.getRunCount() > 1) {
 			Log.logln("FIXME: Running: " + this.junitMethod + ", count: " + re.getRunCount());

@@ -82,7 +82,7 @@ public class ImpactMain {
         long start = System.nanoTime();
         TestExecResults results = runner.run();
         long total = System.nanoTime() - start;
-        System.out.println("Execution time: " + total);
+        System.out.println("Total execution time: " + total);
         System.out.println(results);
     }
 

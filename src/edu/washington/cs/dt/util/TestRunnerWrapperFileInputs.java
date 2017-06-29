@@ -51,6 +51,12 @@ public class TestRunnerWrapperFileInputs {
         		e.printStackTrace();
         		System.exit(0);
         	}
+
+			if (!executor.isClassCompatible()) {
+				System.out.println("  Detected incompatible test case with RunWith annotation.");
+				continue;
+			}
+
             long start = System.nanoTime();
             executor.executeWithJUnit4Runner();
             long interval = System.nanoTime() - start;

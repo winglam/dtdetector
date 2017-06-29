@@ -35,9 +35,7 @@ public class TestExecResults {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        int count = 0;
         for (TestExecResult r : executionRecords) {
-            sb.append((count++) + "-th run");
             sb.append(Globals.lineSep);
             sb.append("Pass: " + r.passingTestsInOrder.size() + ", Fail: " + r.failingTestsInOrder.size() + ", Error: "
                     + r.errorTestsInOrder.size());
