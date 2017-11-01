@@ -22,7 +22,7 @@
                 <exclude name="**/*.launch"/>
                 <exclude name="**/*.java"/>
                 <exclude name="src/main/java/"/>
-                <exclude name="src/test/java/"/>
+                <exclude name="tests/"/>
                 <exclude name="agent/"/>
                 <exclude name="lib/"/>
                 <exclude name="pluginfiles/"/>
@@ -39,7 +39,7 @@
             </fileset>
         </copy>
         <copy includeemptydirs="false" todir="bin">
-            <fileset dir="src/test/java/">
+            <fileset dir="tests/">
                 <exclude name="**/*.launch"/>
                 <exclude name="**/*.java"/>
             </fileset>
@@ -53,9 +53,9 @@
         <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
             <src path="."/>
             <src path="src/main/java/"/>
-            <src path="src/test/java/"/>
+            <src path="tests/"/>
             <exclude name="src/main/java/"/>
-            <exclude name="src/test/java/"/>
+            <exclude name="tests/"/>
             <exclude name="agent/"/>
             <exclude name="lib/"/>
             <exclude name="pluginfiles/"/>

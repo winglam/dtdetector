@@ -1,0 +1,4 @@
+edu.washington.cs.dt.samples.TestShareGlobals.testDummy
+edu.washington.cs.dt.samples.TestShareGlobals.testDummy1
+edu.washington.cs.dt.samples.TestShareGlobals.testDummy2
+edu.washington.cs.dt.samples.TestShareGlobals.test5

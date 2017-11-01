@@ -1,0 +1,5 @@
+edu.washington.cs.dt.samples.TestShareGlobals.test1?22079512#PASS%#%#NO_STACK_TRACE_FOR_A_PASSING_TEST
+edu.washington.cs.dt.samples.TestShareGlobals.test2?689425#PASS%#%#NO_STACK_TRACE_FOR_A_PASSING_TEST
+edu.washington.cs.dt.samples.TestShareGlobals.test3?453856#PASS%#%#NO_STACK_TRACE_FOR_A_PASSING_TEST
+edu.washington.cs.dt.samples.TestShareGlobals.test4?360933#PASS%#%#NO_STACK_TRACE_FOR_A_PASSING_TEST
+edu.washington.cs.dt.samples.TestShareGlobals.test5?446060#PASS%#%#NO_STACK_TRACE_FOR_A_PASSING_TEST

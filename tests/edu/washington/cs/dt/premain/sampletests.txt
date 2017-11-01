@@ -1,0 +1,3 @@
+test.instrumentation.examples.SimpleTest.test1
+test.instrumentation.examples.SimpleTest.test2
+test.instrumentation.examples.SimpleTest.test3
