@@ -24,23 +24,23 @@ import edu.washington.cs.dt.util.Utils;
 public class UnitTestFinder {
 	@Option("Show all options")
 	public static boolean help = false;
-	
+
 	//two options
 	@Option("The output file name for found unit tests")
 	public static String outputFileName = "." + File.separator + "allunittests.txt";
-	
+
 	@Option("The jar file name or path (must be in classpath) where to find unit tests")
 	public static String pathOrJarFile; //it can be a path or a jar
-	
+
 	@Option("Support JUnit 4.x tests")
 	public static boolean junit4 = false;
-	
+
 	@Option("Find both Junit 3.x and 4.x tests")
 	public static boolean junit3and4 = true;
-	
+
 	@Option("Log file")
 	public static String log = null;
-	
+
 	public List<String> findAllTests() throws ClassNotFoundException, ZipException, IOException {
 		File f = new File(pathOrJarFile);
 		if(f.isFile()) {
@@ -51,7 +51,7 @@ public class UnitTestFinder {
 			return getAllTestsFromDir(f);
 		}
 	}
-	
+
 	List<String> getAllTestsFromJar(File jarFile) throws ZipException, IOException, ClassNotFoundException {
 		Log.logln("Looking classes in: " + jarFile);
 		int totalTestClassNum = 0;
@@ -81,7 +81,7 @@ public class UnitTestFinder {
 		Log.logln("Number of test class (with >0 tests: " + totalTestClassNum + ", total tests: " + totalJunitTestsNum);
 		return tests;
 	}
-	
+
 	List<String> getAllTestsFromDir(File dir) throws ClassNotFoundException {
 		Collection<File> files = Files.listFiles(dir, null, true);
 		List<String> tests = new LinkedList<String>();
@@ -96,15 +96,15 @@ public class UnitTestFinder {
 			    	 System.err.println("Can not load: " + clzName);
 			    	 continue;
 			    }
-			    
+
 			    List<String> junitTests = getUnitTestsFromClass(clz);
 			    tests.addAll(junitTests);
-			    
+
 			}
 		}
 		return tests;
 	}
-	
+
 	List<String> getUnitTestsFromClass(Class<?> clz) {
 		List<String> tests = new LinkedList<String>();
 		Method[] methods = clz.getMethods();
@@ -119,7 +119,7 @@ public class UnitTestFinder {
 			    	isUnitTest = CodeUtils.isJUnit3XMethod(method);
 			    }
 			}
-			
+
 			if(isUnitTest) {
 				String testName = clz.getName() + "." + method.getName();
 		        tests.add(testName);
@@ -127,7 +127,7 @@ public class UnitTestFinder {
 		}
 		return tests;
 	}
-	
+
 	public void saveToFile(List<String> allTests) {
 		StringBuilder sb = new StringBuilder();
 		for(String t : allTests) {
@@ -140,7 +140,7 @@ public class UnitTestFinder {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public static void main(String[] args) throws ClassNotFoundException, ZipException, IOException {
 		parse_and_validate_args(args);
 		//set the log option
@@ -151,17 +151,18 @@ public class UnitTestFinder {
 		List<String> allTests = finder.findAllTests();
 		finder.saveToFile(allTests);
 	}
-	
+
 	private static void parse_and_validate_args(String[] args) {
 		Options options = new Options("UnitTestFinder usage: ", UnitTestFinder.class);
 	    String[] file_args = options.parse_or_usage(args);
 	    if(file_args.length != 0) {
 	        Utils.flushToStd(file_args);
-	        System.exit(1);
+	        // System.exit(1);
 	    }
 	    if(help) {
 	    	Utils.flushToStd(options.usage());
-	        System.exit(1);
+                System.out.println("Hi2");
+	        // System.exit(1);
 	    }
 	    List<String> errorMsg = new LinkedList<String>();
 	    if(pathOrJarFile == null) {
@@ -170,7 +171,7 @@ public class UnitTestFinder {
 	    if(!errorMsg.isEmpty()) {
 	    	Utils.flushToStd(errorMsg.toArray(new String[0]));
 	    	Utils.flushToStd(options.usage());
-	        System.exit(1);
+	        // System.exit(1);
 	    }
 	}
 }

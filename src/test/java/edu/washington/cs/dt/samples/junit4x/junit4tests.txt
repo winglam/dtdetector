@@ -1,3 +1,0 @@
-edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.testX
-edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.testY
-edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.testE
