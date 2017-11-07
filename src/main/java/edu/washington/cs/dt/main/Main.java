@@ -135,13 +135,11 @@ public class Main {
 	    String[] file_args = options.parse_or_usage(args);
 	    if(file_args.length != 0) {
 	        Utils.flushToStd(file_args);
-                System.out.println("here1");
 	        System.exit(1);
 	    }
 	    if(help) {
 	    	Utils.flushToStd(new String[]{VERSION});
 	    	Utils.flushToStd(options.usage());
-                System.out.println("here2");
 	        System.exit(1);
 	    }
 	    List<String> errorMsg = new LinkedList<String>();
@@ -173,7 +171,6 @@ public class Main {
 	    if(!errorMsg.isEmpty()) {
 	    	Utils.flushToStd(errorMsg.toArray(new String[0]));
 	    	Utils.flushToStd(options.usage());
-                System.out.println("here3");
 	        System.exit(1);
 	    }
 	    //set the verbose
