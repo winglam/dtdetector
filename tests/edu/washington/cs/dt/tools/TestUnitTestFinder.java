@@ -11,8 +11,8 @@ import edu.washington.cs.dt.samples.junit4x.ExampleForUnitTestFinder;
 
 import junit.framework.TestCase;
 
-public class TestUnitTestFinder extends TestCase {
-	
+public class TestUnitTestFinder { // extends TestCase {
+/*
 	public void testFindClassInJar() throws ZipException, ClassNotFoundException, IOException {
 		//this jar must be in classpath
 		UnitTestFinder.pathOrJarFile = "D:\\research\\testisolation\\Workspace\\DependentTestDetector\\jtopas.jar";
@@ -20,7 +20,7 @@ public class TestUnitTestFinder extends TestCase {
 		List<String> allTests = finder.findAllTests();
 		finder.saveToFile(allTests);
 	}
-	
+
 	public void testFindClassInPath() throws ZipException, ClassNotFoundException, IOException {
 		//this dir must be in classpath
 		UnitTestFinder.pathOrJarFile = "D:\\research\\testisolation\\Workspace\\DependentTestDetector\\bin";
@@ -28,19 +28,23 @@ public class TestUnitTestFinder extends TestCase {
 		List<String> allTests = finder.findAllTests();
 		finder.saveToFile(allTests);
 	}
-	
+        */
+
+    /*
 	public void testArgs1() throws ZipException, ClassNotFoundException, IOException {
 		UnitTestFinder.main(new String[]{"--help"});
 	}
-	
+
 	public void testArgs2() throws ZipException, ClassNotFoundException, IOException {
 		UnitTestFinder.main(new String[]{"--outputFileName=./text"});
 	}
-	
+
 	public void testArgs3() throws ZipException, ClassNotFoundException, IOException {
 		UnitTestFinder.main(new String[]{"--pathOrJarFile=./a.jar"});
 	}
-	
+*/
+
+    /*
 	public void testFindJUnit4() {
 		UnitTestFinder.junit4 = true;
 		UnitTestFinder finder = new UnitTestFinder();
@@ -49,10 +53,11 @@ public class TestUnitTestFinder extends TestCase {
 		assertEquals("[edu.washington.cs.dt.samples.junit4x.ExampleForUnitTestFinder.testX]",
 				tests.toString());
 	}
-	
+        */
+
 	public void tearDown() {
 		UnitTestFinder.pathOrJarFile = null;
 		UnitTestFinder.junit4 = false;
 	}
-	
+
 }

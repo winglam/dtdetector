@@ -21,8 +21,7 @@
             <fileset dir=".">
                 <exclude name="**/*.launch"/>
                 <exclude name="**/*.java"/>
-                <exclude name="src/"/>
-                <exclude name="tests/"/>
+                <exclude name="src/main/java/"/>
                 <exclude name="tests/"/>
                 <exclude name="agent/"/>
                 <exclude name="lib/"/>
@@ -34,13 +33,13 @@
             </fileset>
         </copy>
         <copy includeemptydirs="false" todir="bin">
-            <fileset dir="src">
+            <fileset dir="src/main/java/">
                 <exclude name="**/*.launch"/>
                 <exclude name="**/*.java"/>
             </fileset>
         </copy>
         <copy includeemptydirs="false" todir="bin">
-            <fileset dir="tests">
+            <fileset dir="tests/">
                 <exclude name="**/*.launch"/>
                 <exclude name="**/*.java"/>
             </fileset>
@@ -53,10 +52,9 @@
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
             <src path="."/>
-            <src path="src"/>
-            <src path="tests"/>
-            <exclude name="src/"/>
-            <exclude name="tests/"/>
+            <src path="src/main/java/"/>
+            <src path="tests/"/>
+            <exclude name="src/main/java/"/>
             <exclude name="tests/"/>
             <exclude name="agent/"/>
             <exclude name="lib/"/>

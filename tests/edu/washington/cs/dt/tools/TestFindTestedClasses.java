@@ -5,7 +5,8 @@ import java.util.Collection;
 import edu.washington.cs.dt.util.CodeUtils;
 import junit.framework.TestCase;
 
-public class TestFindTestedClasses extends TestCase {
+//public class TestFindTestedClasses extends TestCase {
+public class TestFindTestedClasses {
 
 //	public void testJFreeChart() throws Throwable {
 //		Collection<String> coll = CodeUtils.getAllPublicNonInnerClasses("./experiments-subjects/jfreechart/1.0.15/jfreechart-src.jar");
