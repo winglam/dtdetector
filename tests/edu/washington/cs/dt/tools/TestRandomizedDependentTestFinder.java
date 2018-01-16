@@ -9,24 +9,27 @@ import edu.washington.cs.dt.util.Log;
 
 import junit.framework.TestCase;
 
+import org.junit.Ignore;
+
 public class TestRandomizedDependentTestFinder extends TestCase {
 
-	
+
 	final static String exampleFile = "./tests/edu/washington/cs/dt/main/sampleinput.txt";
-	
+/*
 	final static String xmlSecurityFile_manual = "./tests/edu/washington/cs/dt/tools/xmlsecurity-all-manual-tests.txt";
 	final static String crystalFile_manual = "./tests/edu/washington/cs/dt/tools/crystal-all-manual-tests.txt";
 	final static String jodatimeFile_manual = "./tests/edu/washington/cs/dt/tools/jodatime-all-manual-tests.txt";
 	final static String synopticFile_manual = "./tests/edu/washington/cs/dt/tools/synoptic-all-manual-tests.txt";
 	final static String jfreechart_manual = "./tests/edu/washington/cs/dt/tools/jfreechart-all-manual-tests.txt";
-	
+
 	final static String jfreechart_tmp = "./tmp-jfreechart.txt";
-	
+
 	final static String xmlSecurityFile_auto = "./tests/edu/washington/cs/dt/tools/xmlsecurity-auto-test-list.txt";
 	final static String crystalFile_auto = "./tests/edu/washington/cs/dt/tools/crystal-auto-test-list.txt";
 	final static String jodatimeFile_auto = "./tests/edu/washington/cs/dt/tools/jodattime-auto-test-list.txt";
 	final static String synopticFile_auto = "./tests/edu/washington/cs/dt/tools/synoptic-auto-test-list.txt";
-	
+        */
+
 	public void testToyExamples() {
 		Log.logConfig("./randomized_toy_results.txt");
 		RandomizedDependentTestFinder.verbose = true;
@@ -37,7 +40,9 @@ public class TestRandomizedDependentTestFinder extends TestCase {
 			System.out.println("    " + t);
 		}
 	}
-	
+
+        /*
+        @Ignore
 	public void testJFreeChart() {
 		Log.logConfig("./randomized_jfreechart_results.txt");
 		RandomizedDependentTestFinder.verbose = true;
@@ -48,7 +53,8 @@ public class TestRandomizedDependentTestFinder extends TestCase {
 			System.out.println("    " + t);
 		}
 	}
-	
+
+        @Ignore
 	public void testJFreeChart_1() {
 		Log.logConfig("./tmp_jfreechart_results.txt");
 		RandomizedDependentTestFinder.verbose = true;
@@ -59,7 +65,8 @@ public class TestRandomizedDependentTestFinder extends TestCase {
 			System.out.println("    " + t);
 		}
 	}
-	
+
+        @Ignore
 	public void testXMLSecurity_manual() {
 		Log.logConfig("./randomized_xmlsecurity_results.txt");
 		RandomizedDependentTestFinder.verbose = true;
@@ -70,7 +77,8 @@ public class TestRandomizedDependentTestFinder extends TestCase {
 			System.out.println("    " + t);
 		}
 	}
-	
+
+        @Ignore
 	public void testCrystal_manual() {
 		Log.logConfig("./randomized_crystal_results.txt");
 		RandomizedDependentTestFinder.verbose = true;
@@ -81,7 +89,7 @@ public class TestRandomizedDependentTestFinder extends TestCase {
 			System.out.println("    " + t);
 		}
 	}
-	
+
 	//6 in total:
 	//
 //	 org.joda.time.TestPeriodType.testForFields4
@@ -90,6 +98,7 @@ public class TestRandomizedDependentTestFinder extends TestCase {
 //	    org.joda.time.TestDateTime_Basics.testWithZoneRetainFields_DateTimeZone
 //	    org.joda.time.TestDateTimeComparator.testMillis
 //	    org.joda.time.TestDateTimeUtils.testOffsetMillisToZero
+        @Ignore
 	public void testJodaTime_manual() {
 		Log.logConfig("./randomized_jodatime_results.txt");
 		RandomizedDependentTestFinder.verbose = true;
@@ -100,7 +109,8 @@ public class TestRandomizedDependentTestFinder extends TestCase {
 			System.out.println("    " + t);
 		}
 	}
-	
+
+        @Ignore
 	public void testSynoptic_manual() {
 		Log.logConfig("./randomized_synoptic_results.txt");
 		RandomizedDependentTestFinder.verbose = true;
@@ -111,8 +121,9 @@ public class TestRandomizedDependentTestFinder extends TestCase {
 			System.out.println("    " + t);
 		}
 	}
-	
+
 	//below is for automated generated tests
+        @Ignore
 	public void testXMLSecurity_auto() {
 		Log.logConfig("./randomized_xmlsecurity_auto_tests_results.txt");
 		RandomizedDependentTestFinder.verbose = true;
@@ -123,9 +134,10 @@ public class TestRandomizedDependentTestFinder extends TestCase {
 			System.out.println("    " + t);
 		}
 	}
-	
-	
-	
+
+
+
+        @Ignore
 	public void testJodaTime_auto() {
 		Log.logConfig("./randomized_jodatime_auto_tests_results.txt");
 		RandomizedDependentTestFinder.verbose = true;
@@ -136,7 +148,8 @@ public class TestRandomizedDependentTestFinder extends TestCase {
 			System.out.println("    " + t);
 		}
 	}
-	
+
+        @Ignore
 	public void testSynoptic_auto() {
 		Log.logConfig("./randomized_synoptic_auto_tests_results.txt");
 		RandomizedDependentTestFinder.verbose = true;
@@ -147,7 +160,8 @@ public class TestRandomizedDependentTestFinder extends TestCase {
 			System.out.println("    " + t);
 		}
 	}
-	
+
+        @Ignore
 	public void testCrystal_auto() {
 		Log.logConfig("./randomized_crystal_auto_tests_results.txt");
 		RandomizedDependentTestFinder.verbose = true;
@@ -157,5 +171,5 @@ public class TestRandomizedDependentTestFinder extends TestCase {
 		for(String t : dts) {
 			System.out.println("    " + t);
 		}
-	}
+	}*/
 }
