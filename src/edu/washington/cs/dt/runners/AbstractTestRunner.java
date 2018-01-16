@@ -1,7 +1,7 @@
 /** Copyright 2012 University of Washington. All Rights Reserved.
  *  @author Sai Zhang
  */
-package edu.washington.cs.dt.runners;
+package main.edu.washington.cs.dt.runners;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -28,6 +28,7 @@ public abstract class AbstractTestRunner {
 	 * intermediate results*/
 	protected String classPath = null;
 	protected String tmpOutputFile = null;
+	protected String threadnum = "";
 	
 	/* Note that we use List here, since order matters*/
 	public AbstractTestRunner(List<String> tests) {
@@ -35,6 +36,18 @@ public abstract class AbstractTestRunner {
 		this.junitTestList.addAll(tests);
 		this.classPath = System.getProperties().getProperty("java.class.path", null);
 		tmpOutputFile = Main.tmpfile;
+	}
+	//overloaded with tmpfilepath argument (the number of threads is passed in for this)
+	public AbstractTestRunner(List<String> tests, String tmpfilepath) {
+		this.junitTestList = new LinkedList<String>();
+		this.junitTestList.addAll(tests);
+		this.classPath = System.getProperties().getProperty("java.class.path", null);
+		tmpOutputFile = (Main.tmpfile)+tmpfilepath;
+		this.threadnum = tmpfilepath;
+	}
+	public String getThreadnum()
+	{
+		return this.threadnum;
 	}
 	
 	public AbstractTestRunner(String fileName) {
