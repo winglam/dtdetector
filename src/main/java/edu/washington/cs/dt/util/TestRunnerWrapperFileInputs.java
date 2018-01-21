@@ -32,8 +32,8 @@ public class TestRunnerWrapperFileInputs {
         String outputFile = args[0];
         List<String> content = Files.readWholeNoExp(args[1]);
         boolean skipIncompatibleTests = false;
-        if (args.length > 2) {
-        	skipIncompatibleTests = Boolean.parseBoolean(args[2]);
+        if (args.length > 3) {
+        	skipIncompatibleTests = Boolean.parseBoolean(args[3]);
         }
         List<String> tests = new LinkedList<String>();
         for(String line : content) {
@@ -57,7 +57,7 @@ public class TestRunnerWrapperFileInputs {
         	try {
                 executor = new JUnitTestExecutor(fullTestName);
         	} catch (ClassNotFoundException e) {
-        		Files.writeToFile("", TestExecUtils.exitFileName);
+        		Files.writeToFile("", TestExecUtils.exitFileName+args[2]);
         		e.printStackTrace();
         		System.exit(0);
         	}
@@ -99,7 +99,7 @@ public class TestRunnerWrapperFileInputs {
             }
         }
         Files.writeToFile(sb.toString(), outputFile);
-        Files.writeToFile("", TestExecUtils.lockFile);
+        Files.writeToFile("", TestExecUtils.lockFile+args[2]);
         return testsExecuted;
     }
 }

@@ -16,6 +16,10 @@ public class FixedOrderRunner extends AbstractTestRunner {
     public FixedOrderRunner(List<String> tests) {
         super(tests);
     }
+    //overloaded
+    public FixedOrderRunner(List<String> tests, String tmpfilepath) {
+        super(tests, tmpfilepath);
+    }
 
     public FixedOrderRunner(String fileName) {
         super(fileName);
@@ -26,8 +30,13 @@ public class FixedOrderRunner extends AbstractTestRunner {
 		System.out.println("Executing fixed runner now.");
 
         TestExecResults result = TestExecResults.createInstance();
-        Map<String, OneTestExecResult> singleRun = TestExecUtils.executeTestsInFreshJVM(super.getClassPath(),
-                super.getTmpOutputFile(), super.junitTestList);
+        //Map<String, OneTestExecResult> singleRun = TestExecUtils.executeTestsInFreshJVM(super.getClassPath(),
+                //super.getTmpOutputFile(), super.junitTestList);
+        
+        TestExecUtils util = new TestExecUtils();
+        Map<String, OneTestExecResult> singleRun = util.executeTestsInFreshJVM(super.getClassPath(),
+                super.getTmpOutputFile(), super.junitTestList, super.getThreadnum());
+        
         result.addExecutionResults(singleRun);
         //check do we need to dump the fixed ordered results to an intermediate file
         if(Main.fixedOrderReport != null) {
