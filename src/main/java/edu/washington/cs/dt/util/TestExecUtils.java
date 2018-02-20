@@ -5,6 +5,8 @@ package edu.washington.cs.dt.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,7 +48,7 @@ public class TestExecUtils {
     		List<String> commandList = new LinkedList<String>();
     		Files.createIfNotExistNoExp(testsfile+append);
     		Files.writeToFileWithNoExp(tests, testsfile+append);
-    		commandList.add(outputFile);
+    		commandList.add(outputFile+append);
     		commandList.add(testsfile+append);
     		commandList.add("true");
 
@@ -55,13 +57,13 @@ public class TestExecUtils {
     		Map<String, OneTestExecResult> testResults = null;
     		try {
     			testsExecuted = TestRunnerWrapperFileInputs.runTests(args);
-        		testResults = parseTestResults(outputFile);
+        		testResults = parseTestResults(outputFile+append);
 
     			File exitFile = new File(exitFileName+append);
     			File file = new File(lockFile+append);
 	    		file.delete();
 	    		exitFile.delete();
-    	        File tmpFile = new File(outputFile);
+    	        File tmpFile = new File(outputFile+append);
     			File tmpTestfile = new File(testsfile+append);
     			tmpFile.delete();
     			tmpTestfile.delete();
@@ -72,6 +74,11 @@ public class TestExecUtils {
     		return testResults;
     	}
     }
+    private static final PrintStream EMPTY_STREAM = new PrintStream(new OutputStream() {
+        public void write(int b) {
+            //DO NOTHING
+        }
+    });
     public Map<String, OneTestExecResult> executeTestsInFreshJVMForkTestExecution(String classPath, String outputFile, List<String> tests, String append) {
 
         List<String> commandList = new LinkedList<String>();
@@ -88,7 +95,7 @@ public class TestExecUtils {
         Files.writeToFileWithNoExp(tests, testsfile+append);
 
         commandList.add("edu.washington.cs.dt.util.TestRunnerWrapperFileInputs");
-        commandList.add(outputFile);
+        commandList.add(outputFile + append);
         commandList.add(testsfile+append);
         
         commandList.add(append);
@@ -105,15 +112,23 @@ public class TestExecUtils {
     		e.printStackTrace();
     	}
 
-        Process proc = Command.execProc(args, System.out, "", false);
+        Process proc = Command.execProc(args, EMPTY_STREAM, "", false);
 
-        while (!file.exists() && !exitFile.exists()) {
-        	try {
-        	    Thread.sleep(1000);
-        	} catch(InterruptedException ex) {
-        	    Thread.currentThread().interrupt();
-        	}
+        try {
+            proc.waitFor();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
+
+//        System.out.println("hello");
+
+//        while (!file.exists() && !exitFile.exists()) {
+//        	try {
+//        	    Thread.sleep(1000);
+//        	} catch(InterruptedException ex) {
+//        	    Thread.currentThread().interrupt();
+//        	}
+//        }
 
         proc.destroy();
 
@@ -135,7 +150,7 @@ public class TestExecUtils {
         	}
         }
 
-        Map<String, OneTestExecResult> testResults = parseTestResults(outputFile);
+        Map<String, OneTestExecResult> testResults = parseTestResults(outputFile + append);
 
         Utils.checkTrue(tests.size() == testResults.size(), "Test num not equal. Results is size " + testResults.size() + ". Tests is size " + tests.size() + ".");
 

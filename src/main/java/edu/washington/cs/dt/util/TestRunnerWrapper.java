@@ -35,7 +35,7 @@ public class TestRunnerWrapper {
 
         long interval;
         for(String fullTestName : tests) {
-        	System.out.println("Test being executed: " + fullTestName);
+//        	System.out.println("Test being executed: " + fullTestName);
         	boolean useJUnit4 = false;
         	try {
                 useJUnit4 = CodeUtils.useJUnit4(fullTestName);

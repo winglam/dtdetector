@@ -27,7 +27,7 @@ public class FixedOrderRunner extends AbstractTestRunner {
 
     @Override
     public TestExecResults run() {
-		System.out.println("Executing fixed runner now.");
+//		System.out.println("Executing fixed runner now.");
 
         TestExecResults result = TestExecResults.createInstance();
         //Map<String, OneTestExecResult> singleRun = TestExecUtils.executeTestsInFreshJVM(super.getClassPath(),
