@@ -19,7 +19,6 @@ public class TestRunnerWrapperFileInputs {
      * */
     public static void main(String[] args) throws IOException {
         runTests(args);
-        System.out.println("hi 101");
         System.exit(0);
     }
     public static int runTests(String[] args) throws IOException {
@@ -47,7 +46,6 @@ public class TestRunnerWrapperFileInputs {
         int testsExecuted = 0;
         /*create the StringBuilder to output results*/
         StringBuilder sb = new StringBuilder();
-        System.out.println("hi 102");
         for(String fullTestName : tests) {
 //        	System.out.println("Test being executed: " + fullTestName);
 
@@ -88,7 +86,6 @@ public class TestRunnerWrapperFileInputs {
             sb.append(fullStackTrace);
             sb.append(Globals.lineSep);
         }
-        System.out.println("hi 103");
         //if not exist, create it
         File f = new File(outputFile);
         if(!f.exists()) {
@@ -102,10 +99,8 @@ public class TestRunnerWrapperFileInputs {
                 throw new RuntimeException("Cannot create: " + outputFile);
             }
         }
-        System.out.println("hi 104");
         Files.writeToFile(sb.toString(), outputFile);
         Files.writeToFile("", TestExecUtils.lockFile+args[2]);
-        System.out.println("hi 105");
         return testsExecuted;
     }
 }
