@@ -5,8 +5,6 @@ package edu.washington.cs.dt.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -74,11 +72,7 @@ public class TestExecUtils {
     		return testResults;
     	}
     }
-    private static final PrintStream EMPTY_STREAM = new PrintStream(new OutputStream() {
-        public void write(int b) {
-            //DO NOTHING
-        }
-    });
+
     public Map<String, OneTestExecResult> executeTestsInFreshJVMForkTestExecution(String classPath, String outputFile, List<String> tests, String append) {
 
         List<String> commandList = new LinkedList<String>();
@@ -112,7 +106,7 @@ public class TestExecUtils {
     		e.printStackTrace();
     	}
 
-        Process proc = Command.execProc(args, EMPTY_STREAM, "", false);
+        Process proc = Command.execProc(args, System.out, "", false);
 
         try {
             proc.waitFor();
