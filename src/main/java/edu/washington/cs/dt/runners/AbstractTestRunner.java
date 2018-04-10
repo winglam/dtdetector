@@ -23,12 +23,13 @@ public abstract class AbstractTestRunner {
 
 	/* The input tests */
 	protected final List<String> junitTestList;
-	
+
 	/*keep the classpath needs to run the tests, tmp output file to keep the
 	 * intermediate results*/
 	protected String classPath = null;
 	protected String tmpOutputFile = null;
-	
+	protected String threadnum = "";
+
 	/* Note that we use List here, since order matters*/
 	public AbstractTestRunner(List<String> tests) {
 		this.junitTestList = new LinkedList<String>();
@@ -36,33 +37,45 @@ public abstract class AbstractTestRunner {
 		this.classPath = System.getProperties().getProperty("java.class.path", null);
 		tmpOutputFile = Main.tmpfile;
 	}
-	
+	//overloaded with tmpfilepath argument (the number of threads is passed in for this)
+	public AbstractTestRunner(List<String> tests, String tmpfilepath) {
+		this.junitTestList = new LinkedList<String>();
+		this.junitTestList.addAll(tests);
+		this.classPath = System.getProperties().getProperty("java.class.path", null);
+		tmpOutputFile = (Main.tmpfile)+tmpfilepath;
+		this.threadnum = tmpfilepath;
+	}
+	public String getThreadnum()
+	{
+		return this.threadnum;
+	}
+
 	public AbstractTestRunner(String fileName) {
 		this(Files.readWholeNoExp(fileName));
 	}
-	
+
 	public void setClassPath(String classPath) {
 		this.classPath = classPath;
 	}
-	
+
 	public String getClassPath() {
 		return this.classPath;
 	}
-	
+
 	public void setTmpOutputFile(String fileName) {
 		this.tmpOutputFile = fileName;
 	}
-	
+
 	public String getTmpOutputFile() {
 		return this.tmpOutputFile;
 	}
-	
+
 	public boolean isTestInList(String test) {
 		return this.junitTestList.contains(test);
 	}
-	
+
 	public abstract TestExecResults run();
-	
+
 	protected void saveResultsToFile(Collection<Map<String, OneTestExecResult>> results, String fileName) {
 		StringBuilder sb = new StringBuilder();
 		int numOfPass = 0;
@@ -122,8 +135,9 @@ public abstract class AbstractTestRunner {
 			throw new Error(e);
 		}
 	}
-	
+
 	protected void saveResultsToFile(Map<String, OneTestExecResult> result, String fileName) {
-		this.saveResultsToFile(Collections.singletonList(result), fileName);
+        this.saveResultsToFile(Collections.singletonList(result), fileName);
 	}
 }
+

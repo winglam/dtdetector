@@ -39,6 +39,119 @@ public class TestExecUtils {
 
     public static boolean fork_test_execution = true;
 
+    public Map<String, OneTestExecResult> executeTestsInFreshJVM(String classPath, String outputFile, List<String> tests, String append) {
+    	if (fork_test_execution) {
+    		return executeTestsInFreshJVMForkTestExecution(classPath, outputFile, tests, append);
+    	} else {
+    		List<String> commandList = new LinkedList<String>();
+    		Files.createIfNotExistNoExp(testsfile+append);
+    		Files.writeToFileWithNoExp(tests, testsfile+append);
+    		commandList.add(outputFile+append);
+    		commandList.add(testsfile+append);
+    		commandList.add("true");
+
+    		String[] args = commandList.toArray(new String[0]);
+    		int testsExecuted = 0;
+    		Map<String, OneTestExecResult> testResults = null;
+    		try {
+    			testsExecuted = TestRunnerWrapperFileInputs.runTests(args);
+        		testResults = parseTestResults(outputFile+append);
+
+    			File exitFile = new File(exitFileName+append);
+    			File file = new File(lockFile+append);
+	    		file.delete();
+	    		exitFile.delete();
+    	        File tmpFile = new File(outputFile+append);
+    			File tmpTestfile = new File(testsfile+append);
+    			tmpFile.delete();
+    			tmpTestfile.delete();
+    		} catch (IOException e) {
+    			e.printStackTrace();
+    		}
+    		Utils.checkTrue(testsExecuted == testResults.size(), "Test num not equal. Results is size " + testResults.size() + ". Tests is size " + testsExecuted + ".");
+    		return testResults;
+    	}
+    }
+
+    public Map<String, OneTestExecResult> executeTestsInFreshJVMForkTestExecution(String classPath, String outputFile, List<String> tests, String append) {
+
+        List<String> commandList = new LinkedList<String>();
+        commandList.add("java");
+        commandList.add("-cp");
+        commandList.add(classPath + Globals.pathSep + System.getProperties().getProperty("java.class.path", null));
+
+//        if(tests.size() < threshhold) {
+//            commandList.add("edu.washington.cs.dt.util.TestRunnerWrapper");
+//            commandList.add(outputFile);
+//            commandList.addAll(tests);
+//        } else {
+        Files.createIfNotExistNoExp(testsfile+append);
+        Files.writeToFileWithNoExp(tests, testsfile+append);
+
+        commandList.add("edu.washington.cs.dt.util.TestRunnerWrapperFileInputs");
+        commandList.add(outputFile + append);
+        commandList.add(testsfile+append);
+        
+        commandList.add(append);
+//        }
+
+        String[] args = commandList.toArray(new String[0]);
+
+        File exitFile = new File(exitFileName+append);
+		File file = new File(lockFile+append);
+    	try{
+    		file.delete();
+    		exitFile.delete();
+    	}catch(Exception e){
+    		e.printStackTrace();
+    	}
+
+        Process proc = Command.execProc(args, System.out, "", false);
+
+        try {
+            proc.waitFor();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+//        System.out.println("hello");
+
+//        while (!file.exists() && !exitFile.exists()) {
+//        	try {
+//        	    Thread.sleep(1000);
+//        	} catch(InterruptedException ex) {
+//        	    Thread.currentThread().interrupt();
+//        	}
+//        }
+
+        proc.destroy();
+
+        if (exitFile.exists()) {
+        	try {
+        		file.delete();
+        		exitFile.delete();
+        	} catch(Exception e){
+        		e.printStackTrace();
+        	}
+        	System.err.println("Exit file detected.");
+        	System.exit(0);
+        } else {
+        	try {
+        		file.delete();
+        		exitFile.delete();
+        	} catch(Exception e){
+        		e.printStackTrace();
+        	}
+        }
+
+        Map<String, OneTestExecResult> testResults = parseTestResults(outputFile + append);
+
+        Utils.checkTrue(tests.size() == testResults.size(), "Test num not equal. Results is size " + testResults.size() + ". Tests is size " + tests.size() + ".");
+
+        return testResults;
+    }
+    
+    
     /*
      * Executes a list of tests in order by launching a fresh JVM, and
      * returns the result of each test.
