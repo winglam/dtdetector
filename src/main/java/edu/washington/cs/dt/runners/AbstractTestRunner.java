@@ -30,6 +30,11 @@ public abstract class AbstractTestRunner {
 	protected String tmpOutputFile = null;
 	protected String threadnum = "";
 
+	public AbstractTestRunner(String classPath, List<String> tests) {
+	    this(tests);
+	    this.classPath = classPath;
+    }
+
 	/* Note that we use List here, since order matters*/
 	public AbstractTestRunner(List<String> tests) {
 		this.junitTestList = new LinkedList<String>();
