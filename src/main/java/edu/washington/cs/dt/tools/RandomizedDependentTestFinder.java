@@ -54,14 +54,14 @@ public class RandomizedDependentTestFinder {
 		this.trialNum = trialNum;
 	}
 	
-	public Set<String> findDependentTests() {
+	public Set<String> findDependentTests(final String classpath) {
 		long startTime = System.currentTimeMillis();
 		
 		//use linked hash set to keep the original order
 		Set<String> depTests = new LinkedHashSet<String>();
 		
 		//first execute all tests in the default order
-		FixedOrderRunner fixedRunner = new FixedOrderRunner(this.defaultTestList);
+		FixedOrderRunner fixedRunner = new FixedOrderRunner(classpath, this.defaultTestList);
 		TestExecResults expected_results = fixedRunner.run();
 		Utils.checkTrue(expected_results.getExecutionRecords().size() == 1,
 				"The size is: " + expected_results.getExecutionRecords().size());
@@ -87,7 +87,7 @@ public class RandomizedDependentTestFinder {
 			if(verbose) {
 				System.out.println("  shuffled tests: " + shuffledTests);
 			}
-			FixedOrderRunner runner = new FixedOrderRunner(shuffledTests);
+			FixedOrderRunner runner = new FixedOrderRunner(classpath, shuffledTests);
 			TestExecResults exec_results = runner.run();
 			//find new dependent tests
 			Set<String> diffTests = this.identifyTestsWithDifferentResults(expected_results, exec_results);

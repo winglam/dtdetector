@@ -35,7 +35,7 @@ public class TestRandomizedDependentTestFinder extends TestCase {
 		RandomizedDependentTestFinder.verbose = true;
 		RandomizedDependentTestFinder randomizedFinder = new RandomizedDependentTestFinder(this.exampleFile);
 		randomizedFinder.setTrialNum(2);
-		Set<String> dts = randomizedFinder.findDependentTests();
+		Set<String> dts = randomizedFinder.findDependentTests(System.getProperty("java.class.path"));
 		for(String t : dts) {
 			System.out.println("    " + t);
 		}

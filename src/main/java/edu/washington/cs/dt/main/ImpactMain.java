@@ -5,6 +5,7 @@
 package edu.washington.cs.dt.main;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -77,12 +78,21 @@ public class ImpactMain {
         boolean do_not_fork_test_execution = argsList.contains("-doNotForkTestExecution");
         TestExecUtils.fork_test_execution = !do_not_fork_test_execution;
 
+        int classpathIndex = argsList.indexOf("-classpath");
+        String classpath = System.getProperty("java.class.path");
+        if (classpathIndex != -1) {
+            if (classpathIndex + 1 < argsList.size()) {
+                classpath = buildClassPath(argsList.get(classpathIndex + 1).split(":"));
+            }
+        }
+
         AbstractTestRunner runner;
         if (randomize) {
-            runner = new RandomOrderRunner(tests);
+            runner = new RandomOrderRunner(classpath, tests);
         } else {
-            runner = new FixedOrderRunner(tests);
+            runner = new FixedOrderRunner(classpath, tests);
         }
+
         long start = System.nanoTime();
         TestExecResults results = runner.run();
         long total = System.nanoTime() - start;
@@ -90,13 +100,39 @@ public class ImpactMain {
         System.out.println(results);
     }
 
-    public static TestExecResults getResults(List<String> tests) {
-        return getResults(tests, false);
+    private static String buildClassPath(String... paths) {
+        StringBuilder sb = new StringBuilder();
+        for (String path : paths) {
+            if (path.endsWith("*")) {
+                path = path.substring(0, path.length() - 1);
+                File pathFile = new File(path);
+
+                final File[] files = pathFile.listFiles();
+
+                if (files != null) {
+                    for (final File file : files) {
+                        if (file.isFile() && file.getName().endsWith(".jar")) {
+                            sb.append(path);
+                            sb.append(file.getName());
+                            sb.append(System.getProperty("path.separator"));
+                        }
+                    }
+                }
+            } else {
+                sb.append(path);
+                sb.append(System.getProperty("path.separator"));
+            }
+        }
+        return sb.toString();
     }
 
-    public static TestExecResults getResults(List<String> tests, boolean getTime) {
+    public static TestExecResults getResults(String classpath, List<String> tests) {
+        return getResults(classpath, tests, false);
+    }
+
+    public static TestExecResults getResults(String classpath, List<String> tests, boolean getTime) {
         useTimer = getTime;
-        AbstractTestRunner runner = new FixedOrderRunner(tests);
+        AbstractTestRunner runner = new FixedOrderRunner(classpath, tests);
         return runner.run();
     }
 }

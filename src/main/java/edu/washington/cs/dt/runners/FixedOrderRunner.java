@@ -25,6 +25,10 @@ public class FixedOrderRunner extends AbstractTestRunner {
         super(fileName);
     }
 
+    public FixedOrderRunner(String classpath, List<String> tests) {
+        super(classpath, tests);
+    }
+
     @Override
     public TestExecResults run() {
 		System.out.println("Executing fixed runner now.");

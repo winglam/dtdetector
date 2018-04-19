@@ -26,7 +26,11 @@ public class RandomOrderRunner extends AbstractTestRunner {
 		super(tests);
 	}
 
-	@Override
+    public RandomOrderRunner(String classpath, List<String> tests) {
+		super(classpath, tests);
+	}
+
+    @Override
 	public TestExecResults run() {
 		System.out.println("Executing random runner now.");
 
