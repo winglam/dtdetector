@@ -126,13 +126,13 @@ public class ImpactMain {
         return sb.toString();
     }
 
-    public static TestExecResults getResults(List<String> tests) {
-        return getResults(tests, false);
+    public static TestExecResults getResults(String classpath, List<String> tests) {
+        return getResults(classpath, tests, false);
     }
 
-    public static TestExecResults getResults(List<String> tests, boolean getTime) {
+    public static TestExecResults getResults(String classpath, List<String> tests, boolean getTime) {
         useTimer = getTime;
-        AbstractTestRunner runner = new FixedOrderRunner(tests);
+        AbstractTestRunner runner = new FixedOrderRunner(classpath, tests);
         return runner.run();
     }
 }
