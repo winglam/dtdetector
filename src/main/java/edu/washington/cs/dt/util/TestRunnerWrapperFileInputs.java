@@ -100,7 +100,7 @@ public class TestRunnerWrapperFileInputs {
             }
         }
         Files.writeToFile(sb.toString(), outputFile);
-        Files.writeToFile("", TestExecUtils.lockFile+args[2]);
+        Files.writeToFile("", TestExecUtils.lockFile + (args.length > 2 ? args[2] : ""));
         return testsExecuted;
     }
 }
