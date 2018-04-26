@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import edu.washington.cs.dt.main.ImpactMain;
+
 /**
  * Beaware, also need to change TestRunnerWrapper
  * */
@@ -58,9 +60,13 @@ public class TestRunnerWrapperFileInputs {
         	try {
                 executor = new JUnitTestExecutor(fullTestName);
         	} catch (ClassNotFoundException e) {
-        		Files.writeToFile("", TestExecUtils.exitFileName+args[2]);
-        		e.printStackTrace();
-        		System.exit(0);
+        	    if (ImpactMain.skipMissingTests) {
+                    continue;
+                } else {
+                    Files.writeToFile("", TestExecUtils.exitFileName+args[2]);
+                    e.printStackTrace();
+                    System.exit(0);
+                }
         	}
 
 			if (skipIncompatibleTests && !executor.isClassCompatible()) {
