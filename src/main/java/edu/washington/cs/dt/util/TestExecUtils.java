@@ -13,6 +13,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import junit.framework.TestFailure;
+
+import edu.washington.cs.dt.main.ImpactMain;
 import plume.Option;
 import edu.washington.cs.dt.OneTestExecResult;
 import edu.washington.cs.dt.RESULT;
@@ -93,7 +95,12 @@ public class TestExecUtils {
         commandList.add(testsfile+append);
         
         commandList.add(append);
-//        }
+
+        if (ImpactMain.skipMissingTests) {
+            commandList.add("-skipMissingTests");
+        }
+
+        //        }
 
         String[] args = commandList.toArray(new String[0]);
 
@@ -210,6 +217,9 @@ public class TestExecUtils {
         commandList.add("edu.washington.cs.dt.util.TestRunnerWrapperFileInputs");
         commandList.add(outputFile);
         commandList.add(testsfile);
+        if (ImpactMain.skipMissingTests) {
+            commandList.add("-skipMissingTests");
+        }
 //        }
 
         String[] args = commandList.toArray(new String[0]);
@@ -285,6 +295,9 @@ public class TestExecUtils {
                 ret.put(testCase, r);
             } else if (result.equals(RESULT.ERROR.name())) {
                 OneTestExecResult r = new OneTestExecResult(RESULT.ERROR, fullStacktrace, Long.parseLong(time));
+                ret.put(testCase, r);
+            } else if (result.equals(RESULT.SKIPPED.name())) {
+                OneTestExecResult r = new OneTestExecResult(RESULT.SKIPPED, fullStacktrace, Long.parseLong(time));
                 ret.put(testCase, r);
             } else {
                 throw new RuntimeException("Unknown result: " + result);

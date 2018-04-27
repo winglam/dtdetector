@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-admin" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-agent" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-client" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-client/groovy-client" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-client/python-client" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-funtest" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-infra" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-infra/ambari-infra-assembly" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-infra/ambari-infra-manager" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-infra/ambari-infra-manager-it" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-infra/ambari-infra-solr-client" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-infra/ambari-infra-solr-plugin" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-logsearch" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-logsearch/ambari-logsearch-appender" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-logsearch/ambari-logsearch-assembly" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-logsearch/ambari-logsearch-config-api" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-logsearch/ambari-logsearch-config-zookeeper" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-logsearch/ambari-logsearch-it" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-logsearch/ambari-logsearch-logfeeder" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-logsearch/ambari-logsearch-server" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-logsearch/ambari-logsearch-web" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-metrics" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-metrics/ambari-metrics-assembly" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-metrics/ambari-metrics-common" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-metrics/ambari-metrics-flume-sink" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-metrics/ambari-metrics-grafana" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-metrics/ambari-metrics-hadoop-sink" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-metrics/ambari-metrics-host-aggregator" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-metrics/ambari-metrics-host-monitoring" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-metrics/ambari-metrics-kafka-sink" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-metrics/ambari-metrics-storm-sink" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-metrics/ambari-metrics-storm-sink-legacy" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-metrics/ambari-metrics-timelineservice" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-project" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-server" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-shell" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-shell/ambari-groovy-shell" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-shell/ambari-python-shell" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-utility" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-views" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../tools/experiments/ambari-old-c088e59ebcf099b01603d883dce7700d44cabc68/ambari-web" charset="UTF-8" />
+  </component>
+</project>

@@ -10,6 +10,7 @@ import junit.framework.TestFailure;
 import junit.framework.TestResult;
 import junit.textui.TestRunner;
 import edu.washington.cs.dt.RESULT;
+import edu.washington.cs.dt.main.ImpactMain;
 
 /**
  * Beaware, also need to change TestRunnerWrapperFileInputs
@@ -53,9 +54,23 @@ public class TestRunnerWrapper {
             	try {
                     executor = new JUnitTestExecutor(fullTestName);
             	} catch (ClassNotFoundException e) {
-            		Files.writeToFile("", TestExecUtils.exitFileName);
-            		e.printStackTrace();
-            		System.exit(0);
+                    if (ImpactMain.skipMissingTests) {
+                        System.out.println("  Skipped missing test : " + fullTestName);
+                        sb.append(fullTestName);
+                        sb.append(TestExecUtils.timeSep);
+                        sb.append("-1");
+                        sb.append(TestExecUtils.testResultSep);
+                        sb.append("SKIPPED");
+                        sb.append(TestExecUtils.resultExcepSep);
+                        //			sb.append(stackTrace);
+                        sb.append(fullStackTrace);
+                        sb.append(Globals.lineSep);
+                        continue;
+                    } else {
+                        Files.writeToFile("", TestExecUtils.exitFileName);
+                        e.printStackTrace();
+                        System.exit(0);
+                    }
             	}
                 long start = System.nanoTime();
                 executor.executeWithJUnit4Runner();

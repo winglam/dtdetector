@@ -44,12 +44,12 @@ class JUnitTestExecutor {
 		try {
 			Class<?> clzName = Class.forName(className);
 			this.junitTest = clzName;
-		} catch (Throwable e) {
-			throw new RuntimeException(e);
+		} catch (ClassNotFoundException e) {
+			throw e;
 		}
 		this.junitMethod = this.fullMethodName.substring(this.fullMethodName.lastIndexOf(".") + 1);
 	}
-	
+
 	public JUnitTestExecutor(String className, String junitMethod) {
 		try {
 			Class<?> clzName = Class.forName(className);
