@@ -23,6 +23,7 @@ import edu.washington.cs.dt.util.TestExecUtils;
 public class ImpactMain {
 
     public static boolean useTimer = false;
+    public static boolean skipMissingTests = false;
 
     public static void main(String[] args) {
         // list to parse the arguments
@@ -74,6 +75,8 @@ public class ImpactMain {
         }
 
         boolean randomize = argsList.contains("-randomize");
+        skipMissingTests = argsList.contains("-skipMissingTests");
+
 
         boolean do_not_fork_test_execution = argsList.contains("-doNotForkTestExecution");
         TestExecUtils.fork_test_execution = !do_not_fork_test_execution;

@@ -23,6 +23,7 @@ public class TestExecResult {
     protected List<String> passingTestsInOrder = new LinkedList<String>();
     protected List<String> failingTestsInOrder = new LinkedList<String>();
     protected List<String> errorTestsInOrder = new LinkedList<String>();
+    protected List<String> skippedTestsInOrder = new LinkedList<String>();
     protected Map<String, RESULT> nameToResultsMap = new HashMap<String, RESULT>();
 
     public TestExecResult(Map<String, OneTestExecResult> singleRun) {
@@ -41,6 +42,9 @@ public class TestExecResult {
             } else if (r.result.equals(RESULT.ERROR)) {
                 this.errorTestsInOrder.add(test);
                 nameToResultsMap.put(test, RESULT.ERROR);
+            } else if (r.result.equals(RESULT.SKIPPED)) {
+                this.skippedTestsInOrder.add(test);
+                nameToResultsMap.put(test, RESULT.SKIPPED);
             } else {
                 throw new RuntimeException("Unknown results: " + r);
             }

@@ -5,8 +5,12 @@ package edu.washington.cs.dt.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import edu.washington.cs.dt.main.ImpactMain;
 
 /**
  * Beaware, also need to change TestRunnerWrapper
@@ -32,10 +36,12 @@ public class TestRunnerWrapperFileInputs {
         /*parse the argument*/
         String outputFile = args[0];
         List<String> content = Files.readWholeNoExp(args[1]);
-        boolean skipIncompatibleTests = false;
-        if (args.length > 3) {
-        	skipIncompatibleTests = Boolean.parseBoolean(args[3]);
-        }
+
+        List<String> argsList = Arrays.asList(args);
+
+        boolean skipIncompatibleTests = argsList.contains("-skipIncompatibleTests");
+        boolean skipMissingTests = argsList.contains("-skipMissingTests");
+
         List<String> tests = new LinkedList<String>();
         for(String line : content) {
             if(!line.trim().equals("")) {
@@ -58,9 +64,23 @@ public class TestRunnerWrapperFileInputs {
         	try {
                 executor = new JUnitTestExecutor(fullTestName);
         	} catch (ClassNotFoundException e) {
-        		Files.writeToFile("", TestExecUtils.exitFileName+args[2]);
-        		e.printStackTrace();
-        		System.exit(0);
+        	    if (skipMissingTests) {
+                    System.out.println("  Skipped missing test : " + fullTestName);
+                    sb.append(fullTestName);
+                    sb.append(TestExecUtils.timeSep);
+                    sb.append("-1");
+                    sb.append(TestExecUtils.testResultSep);
+                    sb.append("SKIPPED");
+                    sb.append(TestExecUtils.resultExcepSep);
+                    //			sb.append(stackTrace);
+                    sb.append(fullStackTrace);
+                    sb.append(Globals.lineSep);
+                    continue;
+                } else {
+                    Files.writeToFile("", TestExecUtils.exitFileName+args[2]);
+                    e.printStackTrace();
+                    System.exit(0);
+                }
         	}
 
 			if (skipIncompatibleTests && !executor.isClassCompatible()) {
