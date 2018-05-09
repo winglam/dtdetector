@@ -207,10 +207,15 @@ class JUnitTestExecutor {
     private class TestOrderComparator implements Comparator<Description> {
         @Override
         public int compare(Description a, Description b) {
-            // Safe to not check for null on map access because we filtered first.
-            return Integer.compare(
-                    testMap.get(TestExecUtils.fullName(a)).index(),
-                    testMap.get(TestExecUtils.fullName(b)).index());
+            if (testMap.containsKey(TestExecUtils.fullName(a))) {
+                if (testMap.containsKey(TestExecUtils.fullName(b))) {
+                    return Integer.compare(
+                            testMap.get(TestExecUtils.fullName(a)).index(),
+                            testMap.get(TestExecUtils.fullName(b)).index());
+                }
+            }
+
+            return 0;
         }
     }
 }
