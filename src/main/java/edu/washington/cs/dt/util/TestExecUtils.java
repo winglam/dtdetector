@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import junit.framework.TestFailure;
 
 import edu.washington.cs.dt.main.ImpactMain;
+import org.junit.runner.Description;
 import plume.Option;
 import edu.washington.cs.dt.OneTestExecResult;
 import edu.washington.cs.dt.RESULT;
@@ -365,5 +366,9 @@ public class TestExecUtils {
             return true;
         }
         return false;
+    }
+
+    public static String fullName(final Description description) {
+        return description.getClassName() + "." + description.getMethodName();
     }
 }

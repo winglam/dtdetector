@@ -5,6 +5,7 @@ package edu.washington.cs.dt.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import junit.framework.TestFailure;
 import junit.framework.TestResult;
@@ -31,87 +32,75 @@ public class TestRunnerWrapper {
         }
         /*create the StringBuilder to output results*/
         StringBuilder sb = new StringBuilder();
-        /*create a test runner*/
-        TestRunner aTestRunner= new TestRunner();
+
+        try {
+            final JUnitTestExecutor executor = JUnitTestExecutor.testOrder(Arrays.asList(tests));
+            for (final JUnitTestResult result : executor.executeWithJUnit4Runner(false)) {
+                result.output(sb);
+            }
+
+            //if not exist, create it
+            File f = new File(outputFile);
+            if(!f.exists()) {
+                File dir = f.getParentFile();
+                boolean created = true;
+                if(dir != null && !dir.exists()) {
+                    created = dir.mkdirs();
+                }
+                created = created & f.createNewFile();
+                if(!created) {
+                    throw new RuntimeException("Cannot create: " + outputFile);
+                }
+            }
+            Files.writeToFile(sb.toString(), outputFile);
+            Files.writeToFile("", TestExecUtils.lockFile + (args.length > 2 ? args[2] : ""));
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        // This is old code for running JUnit 3 tests.
+        // However, it seems that JUnit 3 tests are actually compatible with JUnit 4, so there is no reason to have this.
+        /*
+        TestRunner aTestRunner = new TestRunner();
 
         long interval;
         for(String fullTestName : tests) {
         	System.out.println("Test being executed: " + fullTestName);
-        	boolean useJUnit4 = false;
-        	try {
-                useJUnit4 = CodeUtils.useJUnit4(fullTestName);
-        	} catch (ClassNotFoundException e) {
-        		Files.writeToFile("", TestExecUtils.exitFileName);
-        		e.printStackTrace();
-        		System.exit(0);
-        	}
-            /*check the results*/
             String result = null;
             //String stackTrace = TestExecUtils.noStackTrace;
             String fullStackTrace = TestExecUtils.noStackTrace;
-            if (useJUnit4) {
-                JUnitTestExecutor executor = null;
-            	try {
-                    executor = new JUnitTestExecutor(fullTestName);
-            	} catch (ClassNotFoundException e) {
-                    if (ImpactMain.skipMissingTests) {
-                        System.out.println("  Skipped missing test : " + fullTestName);
-                        sb.append(fullTestName);
-                        sb.append(TestExecUtils.timeSep);
-                        sb.append("-1");
-                        sb.append(TestExecUtils.testResultSep);
-                        sb.append("SKIPPED");
-                        sb.append(TestExecUtils.resultExcepSep);
-                        //			sb.append(stackTrace);
-                        sb.append(fullStackTrace);
-                        sb.append(Globals.lineSep);
-                        continue;
-                    } else {
-                        Files.writeToFile("", TestExecUtils.exitFileName);
-                        e.printStackTrace();
-                        System.exit(0);
-                    }
-            	}
+            try {
+                String[] junitArgs = new String[]{"-m", fullTestName};
+                // System.out.println(Utils.convertArrayToFlatString(junitArgs));
                 long start = System.nanoTime();
-                executor.executeWithJUnit4Runner();
+                TestResult r = aTestRunner.start(junitArgs);
                 interval = System.nanoTime() - start;
-                result = executor.getResult();
-                //stackTrace = executor.getStackTrace();
-                fullStackTrace = executor.getFullStackTrace();
-            } else {
-                try {
-                    String[] junitArgs = new String[]{"-m", fullTestName};
-                    // System.out.println(Utils.convertArrayToFlatString(junitArgs));
-                    long start = System.nanoTime();
-                    TestResult r = aTestRunner.start(junitArgs);
-                    interval = System.nanoTime() - start;
-                    if (r.wasSuccessful()) {
-                        result = RESULT.PASS.name();
-                    } else {
-                        if (r.errorCount() > 0) {
-                            Utils.checkTrue(r.errorCount() == 1,
-                                    "Only execute 1 test: " + fullTestName + ", two errors: "
-                                            + CodeUtils.flattenFailrues(r.errors()));
-                            result = RESULT.ERROR.name();
-                            TestFailure failure = r.errors().nextElement();
-                            //stackTrace = TestExecUtils.flatStackTrace(failure, Main.excludeRegex);
-                            fullStackTrace = TestExecUtils.flatStrings(TestExecUtils.extractStackTraces(failure.thrownException()));
-                        }
-                        if (r.failureCount() > 0) {
-                            Utils.checkTrue(r.failureCount() == 1,
-                                    "Only execute 1 test: " + fullTestName + ", two failures: "
-                                            + CodeUtils.flattenFailrues(r.failures()));
-                            result = RESULT.FAILURE.name();
-                            TestFailure failure = r.failures().nextElement();
-                            //stackTrace = TestExecUtils.flatStackTrace(failure,
-                            //		Main.excludeRegex);
-                            fullStackTrace = TestExecUtils.flatStrings(TestExecUtils.extractStackTraces(failure.thrownException()));
-                        }
+                if (r.wasSuccessful()) {
+                    result = RESULT.PASS.name();
+                } else {
+                    if (r.errorCount() > 0) {
+                        Utils.checkTrue(r.errorCount() == 1,
+                                "Only execute 1 test: " + fullTestName + ", two errors: "
+                                        + CodeUtils.flattenFailrues(r.errors()));
+                        result = RESULT.ERROR.name();
+                        TestFailure failure = r.errors().nextElement();
+                        //stackTrace = TestExecUtils.flatStackTrace(failure, Main.excludeRegex);
+                        fullStackTrace = TestExecUtils.flatStrings(TestExecUtils.extractStackTraces(failure.thrownException()));
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    throw new RuntimeException(e);
+                    if (r.failureCount() > 0) {
+                        Utils.checkTrue(r.failureCount() == 1,
+                                "Only execute 1 test: " + fullTestName + ", two failures: "
+                                        + CodeUtils.flattenFailrues(r.failures()));
+                        result = RESULT.FAILURE.name();
+                        TestFailure failure = r.failures().nextElement();
+                        //stackTrace = TestExecUtils.flatStackTrace(failure,
+                        //		Main.excludeRegex);
+                        fullStackTrace = TestExecUtils.flatStrings(TestExecUtils.extractStackTraces(failure.thrownException()));
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
             }
 
             sb.append(fullTestName);
@@ -124,6 +113,7 @@ public class TestRunnerWrapper {
             sb.append(fullStackTrace);
             sb.append(Globals.lineSep);
         }
+
         //if not exist, create it
         File f = new File(outputFile);
         if(!f.exists()) {
@@ -139,6 +129,7 @@ public class TestRunnerWrapper {
         }
         Files.writeToFile(sb.toString(), outputFile);
         Files.writeToFile("", TestExecUtils.lockFile);
+        */
     }
 
 }
