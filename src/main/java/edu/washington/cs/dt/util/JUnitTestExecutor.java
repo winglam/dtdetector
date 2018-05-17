@@ -163,6 +163,7 @@ class JUnitTestExecutor {
 
         @Override
         public void testStarted(Description description) throws Exception {
+            System.out.println("Test being executed: " + TestExecUtils.fullName(description));
             times.put(TestExecUtils.fullName(description), System.nanoTime());
         }
 
@@ -175,7 +176,7 @@ class JUnitTestExecutor {
                 testRuntimes.put(fullTestName, System.nanoTime() - startTime);
                 times.remove(fullTestName);
             } else {
-                System.out.println("Test finished but did not start: " + description.getDisplayName());
+                System.out.println("Test finished but did not start: " + fullTestName);
             }
         }
     }
