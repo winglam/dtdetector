@@ -50,77 +50,39 @@ public class TestRunnerWrapperFileInputs {
         }
 
         int testsExecuted = 0;
-        /*create the StringBuilder to output results*/
-        StringBuilder sb = new StringBuilder();
-        for(String fullTestName : tests) {
-        	System.out.println("Test being executed: " + fullTestName);
+        try {
+            final JUnitTestExecutor executor;
+            if (skipMissingTests) {
+                executor = JUnitTestExecutor.skipMissing(tests);
+            } else {
+                executor = JUnitTestExecutor.testOrder(tests);
+            }
 
-            /*check the results*/
-            String result = null;
-            //			String stackTrace = TestExecUtils.noStackTrace;
-            String fullStackTrace = TestExecUtils.noStackTrace;
+            /*create the StringBuilder to output results*/
+            StringBuilder sb = new StringBuilder();
+            for (final JUnitTestResult result : executor.executeWithJUnit4Runner(skipIncompatibleTests)) {
+                result.output(sb);
+                testsExecuted++;
+            }
 
-            JUnitTestExecutor executor = null;
-        	try {
-                executor = new JUnitTestExecutor(fullTestName);
-        	} catch (ClassNotFoundException e) {
-        	    if (skipMissingTests) {
-                    System.out.println("  Skipped missing test : " + fullTestName);
-                    sb.append(fullTestName);
-                    sb.append(TestExecUtils.timeSep);
-                    sb.append("-1");
-                    sb.append(TestExecUtils.testResultSep);
-                    sb.append("SKIPPED");
-                    sb.append(TestExecUtils.resultExcepSep);
-                    //			sb.append(stackTrace);
-                    sb.append(fullStackTrace);
-                    sb.append(Globals.lineSep);
-                    continue;
-                } else {
-                    Files.writeToFile("", TestExecUtils.exitFileName+args[2]);
-                    e.printStackTrace();
-                    System.exit(0);
+            //if not exist, create it
+            File f = new File(outputFile);
+            if(!f.exists()) {
+                File dir = f.getParentFile();
+                boolean created = true;
+                if(dir != null && !dir.exists()) {
+                    created = dir.mkdirs();
                 }
-        	}
-
-			if (skipIncompatibleTests && !executor.isClassCompatible()) {
-				System.out.println("  Detected incompatible test case with RunWith annotation.");
-				continue;
-			}
-
-			testsExecuted += 1;
-            long start = System.nanoTime();
-            executor.executeWithJUnit4Runner();
-            long interval = System.nanoTime() - start;
-            result = executor.getResult();
-            //				stackTrace = executor.getStackTrace();
-            fullStackTrace = executor.getFullStackTrace();
-
-            sb.append(fullTestName);
-            sb.append(TestExecUtils.timeSep);
-            sb.append(interval);
-            sb.append(TestExecUtils.testResultSep);
-            sb.append(result);
-            sb.append(TestExecUtils.resultExcepSep);
-            //			sb.append(stackTrace);
-            sb.append(fullStackTrace);
-            sb.append(Globals.lineSep);
-        }
-        //if not exist, create it
-        File f = new File(outputFile);
-        if(!f.exists()) {
-            File dir = f.getParentFile();
-            boolean created = true;
-            if(dir != null && !dir.exists()) {
-                created = dir.mkdirs();
+                created = created & f.createNewFile();
+                if(!created) {
+                    throw new RuntimeException("Cannot create: " + outputFile);
+                }
             }
-            created = created & f.createNewFile();
-            if(!created) {
-                throw new RuntimeException("Cannot create: " + outputFile);
-            }
+            Files.writeToFile(sb.toString(), outputFile);
+            Files.writeToFile("", TestExecUtils.lockFile + (args.length > 2 ? args[2] : ""));
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
-        Files.writeToFile(sb.toString(), outputFile);
-        Files.writeToFile("", TestExecUtils.lockFile+args[2]);
         return testsExecuted;
     }
 }

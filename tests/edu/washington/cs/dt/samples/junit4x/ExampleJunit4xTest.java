@@ -3,11 +3,13 @@
  */
 package edu.washington.cs.dt.samples.junit4x;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import junit.framework.Assert;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
@@ -21,6 +23,13 @@ public class ExampleJunit4xTest {
 
 	static int x = 1;
 
+	private static List<Integer> list = new ArrayList<>();
+
+	@BeforeClass
+	public static void beforeClass() {
+		list.add(1);
+	}
+
 	@Test
 	public void testX() {
 		x++;
@@ -33,13 +42,16 @@ public class ExampleJunit4xTest {
 		System.out.println("Running testY");
 	}
 
-        /*
 	@Test
 	public void testZ() {
 		System.out.println("Throw exception");
 		throw new RuntimeException();
 	}
-        */
+
+	@Test
+	public void test1() {
+		Assert.assertEquals(1, list.size());
+	}
 
         /*
 	@Test

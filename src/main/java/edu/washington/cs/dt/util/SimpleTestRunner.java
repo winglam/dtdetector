@@ -6,6 +6,8 @@ package edu.washington.cs.dt.util;
 import junit.framework.TestResult;
 import junit.textui.TestRunner;
 
+import java.util.Set;
+
 public class SimpleTestRunner {
 
 	public static void main(String[] args) {
@@ -24,13 +26,13 @@ public class SimpleTestRunner {
 			if (useJUnit4) {
 	            JUnitTestExecutor executor = null;
 	        	try {
-	                executor = new JUnitTestExecutor(fullTestName);
+	                executor = JUnitTestExecutor.singleton(fullTestName);
 	        	} catch (ClassNotFoundException e) {
 	        		e.printStackTrace();
 	        		System.exit(0);
 	        	}
-				executor.executeWithJUnit4Runner();
-				System.out.println("executing: ? " + fullTestName + ", successfully? " + executor.getResult());
+				final Set<JUnitTestResult> results = executor.executeWithJUnit4Runner(false);
+				System.out.println("executing: ? " + fullTestName + ", successfully? " + results.iterator().next().getResult());
 			} else {
 				try {
 					String[] junitArgs = new String[]{"-m", fullTestName};
