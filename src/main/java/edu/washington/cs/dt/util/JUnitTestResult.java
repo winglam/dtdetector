@@ -55,7 +55,7 @@ public class JUnitTestResult {
     }
 
     public static JUnitTestResult failOrError(final Failure failure,
-                                              final Long interval,
+                                              final long interval,
                                               final JUnitTest test) {
         final String result;
         final String stackTrace;

@@ -3,10 +3,17 @@
  */
 package edu.washington.cs.dt.util;
 
+import org.junit.runner.Description;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Request;
+import org.junit.runner.Result;
+import org.junit.runner.manipulation.Filter;
+import org.junit.runner.notification.Failure;
+import org.junit.runner.notification.RunListener;
+
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -14,22 +21,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
-
-import junit.framework.AssertionFailedError;
-import junit.framework.ComparisonFailure;
-import org.junit.runner.Description;
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Request;
-import org.junit.runner.Result;
-import org.junit.runner.RunWith;
-import org.junit.runner.Runner;
-import org.junit.runner.manipulation.Filter;
-import org.junit.runner.notification.Failure;
-
-import edu.washington.cs.dt.RESULT;
-import edu.washington.cs.dt.main.Main;
-import org.junit.runner.notification.RunListener;
 
 
 /**
@@ -114,14 +105,14 @@ class JUnitTestExecutor {
     }
 
     public Set<JUnitTestResult> executeWithJUnit4Runner(final boolean skipIncompatible) {
-        JUnitCore core = new JUnitCore();
+        final JUnitCore core = new JUnitCore();
 
         final Request r = Request.classes(allClasses.toArray(new Class<?>[0]))
                 .filterWith(new TestOrderFilter())
                 .sortWith(new TestOrderComparator());
 
-        PrintStream currOut = System.out;
-		PrintStream currErr = System.err;
+        final PrintStream currOut = System.out;
+		final PrintStream currErr = System.err;
 
 		System.setOut(EMPTY_STREAM);
 		System.setErr(EMPTY_STREAM);
@@ -137,15 +128,51 @@ class JUnitTestExecutor {
 
         final Result re = core.run(r);
 		for (final Failure failure : re.getFailures()) {
-		    final String fullTestName = TestExecUtils.fullName(failure.getDescription());
+		    // If the description is a test (that is, a single test), then handle it normally.
+            // Otherwise, the ENTIRE class failed during initialization or some such thing.
+		    if (failure.getDescription().isTest()) {
+                final String fullTestName = TestExecUtils.fullName(failure.getDescription());
 
-		    results.add(JUnitTestResult.failOrError(failure,
-                    testRuntimes.get(fullTestName),
-                    passingTests.get(fullTestName)));
-            passingTests.remove(fullTestName);
+                if (!testRuntimes.containsKey(fullTestName)) {
+                    System.out.println("[ERROR]: No running time measured for test name '" + fullTestName + "'");
+                    continue;
+                }
+
+                if (!passingTests.containsKey(fullTestName)) {
+                    System.out.println("[ERROR]: No JUnitTest found for test name '" + fullTestName + "'");
+                    continue;
+                }
+
+                results.add(JUnitTestResult.failOrError(failure,
+                        testRuntimes.get(fullTestName),
+                        passingTests.get(fullTestName)));
+                passingTests.remove(fullTestName);
+            } else {
+		        // The ENTIRE class failed, so we need to mark every test from this class as failing.
+                final String className = failure.getDescription().getClassName();
+
+                // Make a set first so that we can modify the original hash map
+                final Set<JUnitTest> tests = new HashSet<>(passingTests.values());
+                for (final JUnitTest test : tests) {
+                    if (test.testClass().getCanonicalName().equals(className)) {
+                        results.add(JUnitTestResult.failOrError(failure, 0, test));
+                        passingTests.remove(test.name());
+                    }
+                }
+            }
         }
 
         for (final String fullMethodName : passingTests.keySet()) {
+            if (!testRuntimes.containsKey(fullMethodName)) {
+                System.out.println("[ERROR]: No running time measured for test name '" + fullMethodName + "'");
+                continue;
+            }
+
+            if (!passingTests.containsKey(fullMethodName)) {
+                System.out.println("[ERROR]: No JUnitTest found for test name '" + fullMethodName + "'");
+                continue;
+            }
+
             results.add(JUnitTestResult.passing(testRuntimes.get(fullMethodName), passingTests.get(fullMethodName)));
         }
 
