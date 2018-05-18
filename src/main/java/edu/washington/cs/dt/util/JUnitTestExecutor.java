@@ -34,6 +34,25 @@ class JUnitTestExecutor {
         }
     });
 
+    public static Set<JUnitTestResult> runOrder(final List<String> testList,
+                                                  final boolean skipMissing,
+                                                  final boolean skipIncompatible,
+                                                  final boolean runSeparately)
+            throws ClassNotFoundException {
+        final JUnitTestExecutor executor;
+        if (skipMissing) {
+            executor = JUnitTestExecutor.skipMissing(testList);
+        } else {
+            executor = JUnitTestExecutor.testOrder(testList);
+        }
+
+        if (runSeparately) {
+            return executor.executeSeparately(skipIncompatible);
+        } else {
+            return executor.executeWithJUnit4Runner(skipIncompatible);
+        }
+    }
+
 	private final List<JUnitTest> testOrder = new ArrayList<>();
     private final Map<String, JUnitTest> testMap = new HashMap<>();
 	private final Set<Class<?>> allClasses = new HashSet<>();
@@ -104,42 +123,38 @@ class JUnitTestExecutor {
         return new JUnitTestExecutor(tests);
     }
 
-    public Set<JUnitTestResult> executeWithJUnit4Runner(final boolean skipIncompatible) {
-        final JUnitCore core = new JUnitCore();
+    private boolean checkContains(final Map<String, Long> testRuntimes,
+                                  final Map<String, JUnitTest> passingTests,
+                                  final String fullTestName) {
+        if (!testRuntimes.containsKey(fullTestName)) {
+            System.out.println("[ERROR]: No running time measured for test name '" + fullTestName + "'");
+            return false;
+        }
 
-        final Request r = Request.classes(allClasses.toArray(new Class<?>[0]))
-                .filterWith(new TestOrderFilter())
-                .sortWith(new TestOrderComparator());
+        if (!passingTests.containsKey(fullTestName)) {
+            System.out.println("[ERROR]: No JUnitTest found for test name '" + fullTestName + "'");
+            return false;
+        }
 
-        final PrintStream currOut = System.out;
-		final PrintStream currErr = System.err;
+        return true;
+    }
 
-		System.setOut(EMPTY_STREAM);
-		System.setErr(EMPTY_STREAM);
+    private Set<JUnitTestResult> results(final Result re, final Map<String, Long> testRuntimes) {
+        final Set<JUnitTestResult> results = new HashSet<>(missingTests);
+        final Map<String, JUnitTest> passingTests = new HashMap<>();
 
-		final Map<String, Long> testRuntimes = new HashMap<>();
-		core.addListener(new TestTimeListener(testRuntimes));
+        // We can only mark a test as passing if it actually ran.
+        for (final String testName : testRuntimes.keySet()) {
+            passingTests.put(testName, testMap.get(testName));
+        }
 
-		System.setOut(currOut);
-		System.setErr(currErr);
-
-		final Set<JUnitTestResult> results = new HashSet<>(missingTests);
-		final Map<String, JUnitTest> passingTests = new HashMap<>(testMap);
-
-        final Result re = core.run(r);
-		for (final Failure failure : re.getFailures()) {
-		    // If the description is a test (that is, a single test), then handle it normally.
+        for (final Failure failure : re.getFailures()) {
+            // If the description is a test (that is, a single test), then handle it normally.
             // Otherwise, the ENTIRE class failed during initialization or some such thing.
-		    if (failure.getDescription().isTest()) {
+            if (failure.getDescription().isTest()) {
                 final String fullTestName = TestExecUtils.fullName(failure.getDescription());
 
-                if (!testRuntimes.containsKey(fullTestName)) {
-                    System.out.println("[ERROR]: No running time measured for test name '" + fullTestName + "'");
-                    continue;
-                }
-
-                if (!passingTests.containsKey(fullTestName)) {
-                    System.out.println("[ERROR]: No JUnitTest found for test name '" + fullTestName + "'");
+                if (!checkContains(testRuntimes, passingTests, fullTestName)) {
                     continue;
                 }
 
@@ -148,28 +163,24 @@ class JUnitTestExecutor {
                         passingTests.get(fullTestName)));
                 passingTests.remove(fullTestName);
             } else {
-		        // The ENTIRE class failed, so we need to mark every test from this class as failing.
+                // The ENTIRE class failed, so we need to mark every test from this class as failing.
                 final String className = failure.getDescription().getClassName();
 
                 // Make a set first so that we can modify the original hash map
-                final Set<JUnitTest> tests = new HashSet<>(passingTests.values());
-                for (final JUnitTest test : tests) {
+                for (final JUnitTest test : testOrder) {
                     if (test.testClass().getCanonicalName().equals(className)) {
                         results.add(JUnitTestResult.failOrError(failure, 0, test));
-                        passingTests.remove(test.name());
+
+                        if (passingTests.containsKey(test.name())) {
+                            passingTests.remove(test.name());
+                        }
                     }
                 }
             }
         }
 
         for (final String fullMethodName : passingTests.keySet()) {
-            if (!testRuntimes.containsKey(fullMethodName)) {
-                System.out.println("[ERROR]: No running time measured for test name '" + fullMethodName + "'");
-                continue;
-            }
-
-            if (!passingTests.containsKey(fullMethodName)) {
-                System.out.println("[ERROR]: No JUnitTest found for test name '" + fullMethodName + "'");
+            if (!checkContains(testRuntimes, passingTests, fullMethodName)) {
                 continue;
             }
 
@@ -177,6 +188,41 @@ class JUnitTestExecutor {
         }
 
         return results;
+    }
+
+    private Set<JUnitTestResult> execute(final Request r) {
+        final PrintStream currOut = System.out;
+        final PrintStream currErr = System.err;
+
+//        System.setOut(EMPTY_STREAM);
+//        System.setErr(EMPTY_STREAM);
+
+        final JUnitCore core = new JUnitCore();
+
+        final Map<String, Long> testRuntimes = new HashMap<>();
+        core.addListener(new TestTimeListener(testRuntimes));
+        final Result re = core.run(r);
+
+//        System.setOut(currOut);
+//        System.setErr(currErr);
+
+        return results(re, testRuntimes);
+    }
+
+    public Set<JUnitTestResult> executeSeparately(final boolean skipIncompatible) {
+        final Set<JUnitTestResult> results = new HashSet<>();
+
+        for (final JUnitTest test : testOrder) {
+            results.addAll(execute(test.request()));
+        }
+
+        return results;
+    }
+
+    public Set<JUnitTestResult> executeWithJUnit4Runner(final boolean skipIncompatible) {
+        return execute(Request.classes(allClasses.toArray(new Class<?>[0]))
+                .filterWith(new TestOrderFilter())
+                .sortWith(new TestOrderComparator()));
 	}
 
     private static class TestTimeListener extends RunListener {

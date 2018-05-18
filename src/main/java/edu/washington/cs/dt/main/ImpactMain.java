@@ -24,6 +24,7 @@ public class ImpactMain {
 
     public static boolean useTimer = false;
     public static boolean skipMissingTests = false;
+    public static boolean runSeparately = false;
 
     public static void main(String[] args) {
         // list to parse the arguments
@@ -76,6 +77,7 @@ public class ImpactMain {
 
         boolean randomize = argsList.contains("-randomize");
         skipMissingTests = argsList.contains("-skipMissingTests");
+        runSeparately = argsList.contains("-separate");
 
 
         boolean do_not_fork_test_execution = argsList.contains("-doNotForkTestExecution");

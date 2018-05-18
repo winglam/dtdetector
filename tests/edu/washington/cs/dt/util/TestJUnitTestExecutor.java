@@ -5,14 +5,18 @@ package edu.washington.cs.dt.util;
 
 import edu.washington.cs.dt.RESULT;
 import edu.washington.cs.dt.samples.SampleJUnit3Tests;
+import edu.washington.cs.dt.samples.junit4x.ExampleBeforeClassTests;
 import edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest;
+import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class TestJUnitTestExecutor extends TestCase {
@@ -207,5 +211,42 @@ public class TestJUnitTestExecutor extends TestCase {
 		        fail("Unexpected test run: " + result.getTest().name());
             }
         }
+	}
+
+	public void testRunSeparateAndTogether() throws ClassNotFoundException {
+		final List<String> testOrder =
+            Arrays.asList(
+                    "edu.washington.cs.dt.samples.junit4x.ExampleBeforeClassTests.testXsHasOneItemAndAddOne",
+                    "edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.testX",
+                    "edu.washington.cs.dt.samples.junit4x.ExampleBeforeClassTests.testXsHasTwoItems"
+            );
+
+		final JUnitTestExecutor executor = JUnitTestExecutor.testOrder(testOrder);
+		final Map<String, String> expectedJUnitRunner = new HashMap<>();
+
+		expectedJUnitRunner.put("edu.washington.cs.dt.samples.junit4x.ExampleBeforeClassTests.testXsHasOneItemAndAddOne", RESULT.PASS.name());
+		expectedJUnitRunner.put("edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.testX", RESULT.PASS.name());
+		expectedJUnitRunner.put("edu.washington.cs.dt.samples.junit4x.ExampleBeforeClassTests.testXsHasTwoItems", RESULT.PASS.name());
+
+		final Map<String, String> expectedSeparate = new HashMap<>();
+
+		expectedSeparate.put("edu.washington.cs.dt.samples.junit4x.ExampleBeforeClassTests.testXsHasOneItemAndAddOne", RESULT.PASS.name());
+		expectedSeparate.put("edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.testX", RESULT.PASS.name());
+		expectedSeparate.put("edu.washington.cs.dt.samples.junit4x.ExampleBeforeClassTests.testXsHasTwoItems", RESULT.ERROR.name());
+
+		checkExpected(expectedJUnitRunner, executor.executeWithJUnit4Runner(false));
+
+		// Need to clear the state between runs.
+		ExampleBeforeClassTests.xs.clear();
+
+		checkExpected(expectedSeparate, executor.executeSeparately(false));
+	}
+
+	private void checkExpected(final Map<String, String> expected, final Set<JUnitTestResult> results) {
+		Assert.assertEquals(expected.size(), results.size());
+
+		for (final JUnitTestResult result : results) {
+			Assert.assertEquals(expected.get(result.getTest().name()), result.getResult());
+		}
 	}
 }

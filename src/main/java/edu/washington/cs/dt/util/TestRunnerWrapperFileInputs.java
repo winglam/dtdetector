@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import edu.washington.cs.dt.main.ImpactMain;
 
@@ -41,6 +42,7 @@ public class TestRunnerWrapperFileInputs {
 
         boolean skipIncompatibleTests = argsList.contains("-skipIncompatibleTests");
         boolean skipMissingTests = argsList.contains("-skipMissingTests");
+        boolean runSeparately = argsList.contains("-separate");
 
         List<String> tests = new LinkedList<String>();
         for(String line : content) {
@@ -51,16 +53,9 @@ public class TestRunnerWrapperFileInputs {
 
         int testsExecuted = 0;
         try {
-            final JUnitTestExecutor executor;
-            if (skipMissingTests) {
-                executor = JUnitTestExecutor.skipMissing(tests);
-            } else {
-                executor = JUnitTestExecutor.testOrder(tests);
-            }
-
             /*create the StringBuilder to output results*/
             StringBuilder sb = new StringBuilder();
-            for (final JUnitTestResult result : executor.executeWithJUnit4Runner(skipIncompatibleTests)) {
+            for (final JUnitTestResult result : JUnitTestExecutor.runOrder(tests, skipMissingTests, skipIncompatibleTests, runSeparately)) {
                 result.output(sb);
                 testsExecuted++;
             }

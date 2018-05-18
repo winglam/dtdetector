@@ -30,12 +30,12 @@ public class TestRunnerWrapper {
         for(int index = 1; index < args.length; index++) {
             tests[index - 1] = args[index];
         }
+
         /*create the StringBuilder to output results*/
         StringBuilder sb = new StringBuilder();
 
         try {
-            final JUnitTestExecutor executor = JUnitTestExecutor.testOrder(Arrays.asList(tests));
-            for (final JUnitTestResult result : executor.executeWithJUnit4Runner(false)) {
+            for (final JUnitTestResult result : JUnitTestExecutor.runOrder(Arrays.asList(tests), false, false, false)) {
                 result.output(sb);
             }
 
