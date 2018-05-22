@@ -3,10 +3,17 @@
  */
 package edu.washington.cs.dt.util;
 
+import org.junit.runner.Description;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Request;
+import org.junit.runner.Result;
+import org.junit.runner.manipulation.Filter;
+import org.junit.runner.notification.Failure;
+import org.junit.runner.notification.RunListener;
+
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -14,22 +21,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
-
-import junit.framework.AssertionFailedError;
-import junit.framework.ComparisonFailure;
-import org.junit.runner.Description;
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Request;
-import org.junit.runner.Result;
-import org.junit.runner.RunWith;
-import org.junit.runner.Runner;
-import org.junit.runner.manipulation.Filter;
-import org.junit.runner.notification.Failure;
-
-import edu.washington.cs.dt.RESULT;
-import edu.washington.cs.dt.main.Main;
-import org.junit.runner.notification.RunListener;
 
 
 /**
@@ -42,6 +33,25 @@ class JUnitTestExecutor {
             //DO NOTHING
         }
     });
+
+    public static Set<JUnitTestResult> runOrder(final List<String> testList,
+                                                  final boolean skipMissing,
+                                                  final boolean skipIncompatible,
+                                                  final boolean runSeparately)
+            throws ClassNotFoundException {
+        final JUnitTestExecutor executor;
+        if (skipMissing) {
+            executor = JUnitTestExecutor.skipMissing(testList);
+        } else {
+            executor = JUnitTestExecutor.testOrder(testList);
+        }
+
+        if (runSeparately) {
+            return executor.executeSeparately(skipIncompatible);
+        } else {
+            return executor.executeWithJUnit4Runner(skipIncompatible);
+        }
+    }
 
 	private final List<JUnitTest> testOrder = new ArrayList<>();
     private final Map<String, JUnitTest> testMap = new HashMap<>();
@@ -113,43 +123,106 @@ class JUnitTestExecutor {
         return new JUnitTestExecutor(tests);
     }
 
-    public Set<JUnitTestResult> executeWithJUnit4Runner(final boolean skipIncompatible) {
-        JUnitCore core = new JUnitCore();
+    private boolean checkContains(final Map<String, Long> testRuntimes,
+                                  final Map<String, JUnitTest> passingTests,
+                                  final String fullTestName) {
+        if (!testRuntimes.containsKey(fullTestName)) {
+            System.out.println("[ERROR]: No running time measured for test name '" + fullTestName + "'");
+            return false;
+        }
 
-        final Request r = Request.classes(allClasses.toArray(new Class<?>[0]))
-                .filterWith(new TestOrderFilter())
-                .sortWith(new TestOrderComparator());
+        if (!passingTests.containsKey(fullTestName)) {
+            System.out.println("[ERROR]: No JUnitTest found for test name '" + fullTestName + "'");
+            return false;
+        }
 
-        PrintStream currOut = System.out;
-		PrintStream currErr = System.err;
+        return true;
+    }
 
-		System.setOut(EMPTY_STREAM);
-		System.setErr(EMPTY_STREAM);
+    private Set<JUnitTestResult> results(final Result re, final Map<String, Long> testRuntimes) {
+        final Set<JUnitTestResult> results = new HashSet<>(missingTests);
+        final Map<String, JUnitTest> passingTests = new HashMap<>();
 
-		final Map<String, Long> testRuntimes = new HashMap<>();
-		core.addListener(new TestTimeListener(testRuntimes));
+        // We can only mark a test as passing if it actually ran.
+        for (final String testName : testRuntimes.keySet()) {
+            passingTests.put(testName, testMap.get(testName));
+        }
 
-		System.setOut(currOut);
-		System.setErr(currErr);
+        for (final Failure failure : re.getFailures()) {
+            // If the description is a test (that is, a single test), then handle it normally.
+            // Otherwise, the ENTIRE class failed during initialization or some such thing.
+            if (failure.getDescription().isTest()) {
+                final String fullTestName = TestExecUtils.fullName(failure.getDescription());
 
-		final Set<JUnitTestResult> results = new HashSet<>(missingTests);
-		final Map<String, JUnitTest> passingTests = new HashMap<>(testMap);
+                if (!checkContains(testRuntimes, passingTests, fullTestName)) {
+                    continue;
+                }
 
-        final Result re = core.run(r);
-		for (final Failure failure : re.getFailures()) {
-		    final String fullTestName = TestExecUtils.fullName(failure.getDescription());
+                results.add(JUnitTestResult.failOrError(failure,
+                        testRuntimes.get(fullTestName),
+                        passingTests.get(fullTestName)));
+                passingTests.remove(fullTestName);
+            } else {
+                // The ENTIRE class failed, so we need to mark every test from this class as failing.
+                final String className = failure.getDescription().getClassName();
 
-		    results.add(JUnitTestResult.failOrError(failure,
-                    testRuntimes.get(fullTestName),
-                    passingTests.get(fullTestName)));
-            passingTests.remove(fullTestName);
+                // Make a set first so that we can modify the original hash map
+                for (final JUnitTest test : testOrder) {
+                    if (test.testClass().getCanonicalName().equals(className)) {
+                        results.add(JUnitTestResult.failOrError(failure, 0, test));
+
+                        if (passingTests.containsKey(test.name())) {
+                            passingTests.remove(test.name());
+                        }
+                    }
+                }
+            }
         }
 
         for (final String fullMethodName : passingTests.keySet()) {
+            if (!checkContains(testRuntimes, passingTests, fullMethodName)) {
+                continue;
+            }
+
             results.add(JUnitTestResult.passing(testRuntimes.get(fullMethodName), passingTests.get(fullMethodName)));
         }
 
         return results;
+    }
+
+    private Set<JUnitTestResult> execute(final Request r) {
+        final PrintStream currOut = System.out;
+        final PrintStream currErr = System.err;
+
+//        System.setOut(EMPTY_STREAM);
+//        System.setErr(EMPTY_STREAM);
+
+        final JUnitCore core = new JUnitCore();
+
+        final Map<String, Long> testRuntimes = new HashMap<>();
+        core.addListener(new TestTimeListener(testRuntimes));
+        final Result re = core.run(r);
+
+//        System.setOut(currOut);
+//        System.setErr(currErr);
+
+        return results(re, testRuntimes);
+    }
+
+    public Set<JUnitTestResult> executeSeparately(final boolean skipIncompatible) {
+        final Set<JUnitTestResult> results = new HashSet<>();
+
+        for (final JUnitTest test : testOrder) {
+            results.addAll(execute(test.request()));
+        }
+
+        return results;
+    }
+
+    public Set<JUnitTestResult> executeWithJUnit4Runner(final boolean skipIncompatible) {
+        return execute(Request.classes(allClasses.toArray(new Class<?>[0]))
+                .filterWith(new TestOrderFilter())
+                .sortWith(new TestOrderComparator()));
 	}
 
     private static class TestTimeListener extends RunListener {

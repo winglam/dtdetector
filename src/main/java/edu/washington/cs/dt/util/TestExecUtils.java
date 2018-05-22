@@ -101,6 +101,10 @@ public class TestExecUtils {
             commandList.add("-skipMissingTests");
         }
 
+        if (ImpactMain.runSeparately) {
+            commandList.add("-separate");
+        }
+
         //        }
 
         String[] args = commandList.toArray(new String[0]);
@@ -221,6 +225,11 @@ public class TestExecUtils {
         if (ImpactMain.skipMissingTests) {
             commandList.add("-skipMissingTests");
         }
+
+        if (ImpactMain.runSeparately) {
+            commandList.add("-separate");
+        }
+
 //        }
 
         String[] args = commandList.toArray(new String[0]);

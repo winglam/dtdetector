@@ -1,6 +1,7 @@
 package edu.washington.cs.dt.util;
 
 import org.junit.runner.Description;
+import org.junit.runner.Request;
 import org.junit.runner.RunWith;
 
 public class JUnitTest {
@@ -61,5 +62,13 @@ public class JUnitTest {
 
     public int index() {
         return i;
+    }
+
+    public String methodName() {
+        return junitMethod;
+    }
+
+    public Request request() {
+        return Request.method(clzName, junitMethod);
     }
 }
