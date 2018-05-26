@@ -29,162 +29,53 @@ public class TestJUnitTestExecutor extends TestCase {
 	    return executor.executeWithJUnit4Runner(false).iterator().next();
     }
 
-	public void testPassJUnit3() {
-		JUnitTestExecutor executor = JUnitTestExecutor.singleton(SampleJUnit3Tests.class, "testJUnit3_1");
+	public void testPassJUnit3() throws Exception {
+		JUnitTestExecutor executor = JUnitTestExecutor.singleton(SampleJUnit3Tests.class.getCanonicalName() + ".testJUnit3_1");
 		JUnitTestResult result = singletonResult(executor);
 		assertEquals(RESULT.PASS.name(), result.getResult());
 		assertEquals(TestExecUtils.noStackTrace, result.getStackTrace());
-
-		try {
-			executor = JUnitTestExecutor.singleton("edu.washington.cs.dt.samples.SampleJUnit3Tests.testJUnit3_1");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        result = singletonResult(executor);
-		assertEquals(RESULT.PASS.name(), result.getResult());
-		assertTrue(TestExecUtils.noStackTrace.equals(result.getStackTrace()));
-
-		executor = JUnitTestExecutor.singleton("edu.washington.cs.dt.samples.SampleJUnit3Tests", "testJUnit3_1");
-		result = singletonResult(executor);
-		assertEquals(RESULT.PASS.name(), result.getResult());
-		assertTrue(TestExecUtils.noStackTrace.equals(result.getStackTrace()));
 	}
 
-	public void testPassJUnit4() {
-		JUnitTestExecutor executor = JUnitTestExecutor.singleton(ExampleJunit4xTest.class, "testX");
+	public void testPassJUnit4() throws Exception {
+		JUnitTestExecutor executor = JUnitTestExecutor.singleton(ExampleJunit4xTest.class.getCanonicalName() + ".testX");
 		JUnitTestResult result = singletonResult(executor);
 		assertEquals(RESULT.PASS.name(), result.getResult());
 		assertEquals(TestExecUtils.noStackTrace, result.getStackTrace());
-
-		try {
-			executor = JUnitTestExecutor.singleton("edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.testX");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        result = singletonResult(executor);
-		assertEquals(RESULT.PASS.name(), result.getResult());
-		assertTrue(TestExecUtils.noStackTrace.equals(result.getStackTrace()));
-
-		executor = JUnitTestExecutor.singleton("edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest", "testX");
-        result = singletonResult(executor);
-		assertEquals(RESULT.PASS.name(), result.getResult());
-		assertTrue(TestExecUtils.noStackTrace.equals(result.getStackTrace()));
 	}
 
-	public void testJUnit3WithException() {
-		JUnitTestExecutor executor = JUnitTestExecutor.singleton(SampleJUnit3Tests.class, "testJUnit3_exception");
+	public void testJUnit3WithException() throws Exception {
+		JUnitTestExecutor executor = JUnitTestExecutor.singleton(SampleJUnit3Tests.class.getCanonicalName() + ".testJUnit3_exception");
         JUnitTestResult result = singletonResult(executor);
 		assertEquals(RESULT.ERROR.name(), result.getResult());
-		assertTrue(!TestExecUtils.noStackTrace.equals(result.getStackTrace()));
-
-		try {
-			executor = JUnitTestExecutor.singleton("edu.washington.cs.dt.samples.SampleJUnit3Tests.testJUnit3_exception");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		result = singletonResult(executor);
-		assertEquals(RESULT.ERROR.name(), result.getResult());
-		assertTrue(!TestExecUtils.noStackTrace.equals(result.getStackTrace()));
-
-		executor = JUnitTestExecutor.singleton("edu.washington.cs.dt.samples.SampleJUnit3Tests", "testJUnit3_exception");
-		result = singletonResult(executor);
-		assertEquals(RESULT.ERROR.name(), result.getResult());
-		assertTrue(!TestExecUtils.noStackTrace.equals(result.getStackTrace()));
+		assertFalse(TestExecUtils.noStackTrace.equals(result.getStackTrace()));
 	}
 
-        /*
-	public void testFail1JUnit4() {
-		JUnitTestExecutor executor = new JUnitTestExecutor(ExampleJunit4xTest.class, "testE");
-		executor.executeWithJUnit4Runner();
+	public void testFail1JUnit4() throws Exception {
+		JUnitTestExecutor executor = JUnitTestExecutor.singleton(ExampleJunit4xTest.class.getCanonicalName() + ".testE");
+		JUnitTestResult result = singletonResult(executor);
 		assertEquals(RESULT.FAILURE.name(), result.getResult());
-		assertTrue(!TestExecUtils.noStackTrace.equals(result.getStackTrace()));
-
-		try {
-			executor = new JUnitTestExecutor("edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.testE");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		executor.executeWithJUnit4Runner();
-		assertEquals(RESULT.FAILURE.name(), result.getResult());
-		assertTrue(!TestExecUtils.noStackTrace.equals(result.getStackTrace()));
-
-		executor = new JUnitTestExecutor("edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest", "testE");
-		executor.executeWithJUnit4Runner();
-		assertEquals(RESULT.FAILURE.name(), result.getResult());
-		assertTrue(!TestExecUtils.noStackTrace.equals(result.getStackTrace()));
+		assertFalse(TestExecUtils.noStackTrace.equals(result.getStackTrace()));
 	}
-        */
 
-	public void testJUnit3WithFailure() {
-		JUnitTestExecutor executor = JUnitTestExecutor.singleton(SampleJUnit3Tests.class, "testJUnit3_fail");
+	public void testJUnit3WithFailure() throws Exception {
+		JUnitTestExecutor executor = JUnitTestExecutor.singleton(SampleJUnit3Tests.class.getCanonicalName() + ".testJUnit3_fail");
         JUnitTestResult result = singletonResult(executor);
 		assertEquals(RESULT.FAILURE.name(), result.getResult());
-		assertTrue(!TestExecUtils.noStackTrace.equals(result.getStackTrace()));
-
-		try {
-			executor = JUnitTestExecutor.singleton("edu.washington.cs.dt.samples.SampleJUnit3Tests.testJUnit3_fail");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		result = singletonResult(executor);
-		assertEquals(RESULT.FAILURE.name(), result.getResult());
-		assertTrue(!TestExecUtils.noStackTrace.equals(result.getStackTrace()));
-
-		executor = JUnitTestExecutor.singleton("edu.washington.cs.dt.samples.SampleJUnit3Tests", "testJUnit3_fail");
-		result = singletonResult(executor);
-		assertEquals(RESULT.FAILURE.name(), result.getResult());
-		assertTrue(!TestExecUtils.noStackTrace.equals(result.getStackTrace()));
+		assertFalse(TestExecUtils.noStackTrace.equals(result.getStackTrace()));
 	}
 
-        /*
-	public void testFail2JUnit4() {
-		JUnitTestExecutor executor = new JUnitTestExecutor(ExampleJunit4xTest.class, "testF");
-		executor.executeWithJUnit4Runner();
+	public void testFail2JUnit4() throws Exception {
+		JUnitTestExecutor executor = JUnitTestExecutor.singleton(ExampleJunit4xTest.class.getCanonicalName() + ".testF");
+		JUnitTestResult result = singletonResult(executor);
 		assertEquals(RESULT.FAILURE.name(), result.getResult());
-		assertTrue(!TestExecUtils.noStackTrace.equals(result.getStackTrace()));
-
-		try {
-			executor = new JUnitTestExecutor("edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.testF");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		executor.executeWithJUnit4Runner();
-		assertEquals(RESULT.FAILURE.name(), result.getResult());
-		assertTrue(!TestExecUtils.noStackTrace.equals(result.getStackTrace()));
-
-		executor = new JUnitTestExecutor("edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest", "testF");
-		executor.executeWithJUnit4Runner();
-		assertEquals(RESULT.FAILURE.name(), result.getResult());
-		assertTrue(!TestExecUtils.noStackTrace.equals(result.getStackTrace()));
+		assertFalse(TestExecUtils.noStackTrace.equals(result.getStackTrace()));
 	}
-        */
 
-	public void testErrorJUnit4() {
-		JUnitTestExecutor executor = JUnitTestExecutor.singleton(ExampleJunit4xTest.class, "testZ");
+	public void testErrorJUnit4() throws Exception {
+		JUnitTestExecutor executor = JUnitTestExecutor.singleton(ExampleJunit4xTest.class.getCanonicalName() + ".testZ");
         JUnitTestResult result = singletonResult(executor);
 		assertEquals(RESULT.ERROR.name(), result.getResult());
-		assertTrue(!TestExecUtils.noStackTrace.equals(result.getStackTrace()));
-
-		try {
-			executor = JUnitTestExecutor.singleton("edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.testZ");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		result = singletonResult(executor);
-		assertEquals(RESULT.ERROR.name(), result.getResult());
-		assertTrue(!TestExecUtils.noStackTrace.equals(result.getStackTrace()));
-
-		executor = JUnitTestExecutor.singleton("edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest", "testZ");
-		result = singletonResult(executor);
-		assertEquals(RESULT.ERROR.name(), result.getResult());
-		assertTrue(!TestExecUtils.noStackTrace.equals(result.getStackTrace()));
+		assertFalse(TestExecUtils.noStackTrace.equals(result.getStackTrace()));
 	}
 
 	public void testRunMultipleJUnit4() throws ClassNotFoundException {
@@ -195,6 +86,11 @@ public class TestJUnitTestExecutor extends TestCase {
 						"edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.test1"
 				)
 		);
+
+		// We have to clear this before running tests in this class.
+        // This is because each time we invoke JUnit, it calls the @BeforeClass in the test class,
+        // causing some tests (e.g. ExampleJunit4xTest.test1) to fail.
+		ExampleJunit4xTest.list.clear();
 
 		final Set<JUnitTestResult> results = executor.executeWithJUnit4Runner(false);
 

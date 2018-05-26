@@ -110,4 +110,11 @@ public class JUnitTestResult {
     public JUnitTest getTest() {
         return test;
     }
+
+    public static JUnitTestResult initFailure(final ExceptionInInitializerError e, final String fullMethodName) {
+        final String stackTrace = flatStackTrace(e);
+        final String fullStackTrace = TestExecUtils.flatStrings(TestExecUtils.extractStackTraces(e));
+
+        return new JUnitTestResult(RESULT.FAILURE.name(), stackTrace, fullStackTrace, 0, fullMethodName, null);
+    }
 }

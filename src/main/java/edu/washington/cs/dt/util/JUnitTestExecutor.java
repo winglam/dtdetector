@@ -56,7 +56,7 @@ class JUnitTestExecutor {
 	private final List<JUnitTest> testOrder = new ArrayList<>();
     private final Map<String, JUnitTest> testMap = new HashMap<>();
 	private final Set<Class<?>> allClasses = new HashSet<>();
-	private final Set<JUnitTestResult> missingTests = new HashSet<>();
+	private final Set<JUnitTestResult> knownResults = new HashSet<>();
 
     public JUnitTestExecutor(final JUnitTest test) {
         this(Collections.singletonList(test));
@@ -66,7 +66,7 @@ class JUnitTestExecutor {
         this(tests, new HashSet<JUnitTestResult>());
     }
 
-    public JUnitTestExecutor(final List<JUnitTest> tests, final Set<JUnitTestResult> missingTests) {
+    public JUnitTestExecutor(final List<JUnitTest> tests, final Set<JUnitTestResult> knownResults) {
         for (final JUnitTest test : tests) {
             if (test.isClassCompatible()) {
                 testOrder.add(test);
@@ -77,25 +77,17 @@ class JUnitTestExecutor {
             }
         }
 
-        this.missingTests.addAll(missingTests);
+        this.knownResults.addAll(knownResults);
     }
 
     //package.class.method
     public static JUnitTestExecutor singleton(final String fullMethodName) throws ClassNotFoundException {
-        return new JUnitTestExecutor(new JUnitTest(fullMethodName));
-    }
-
-    public static JUnitTestExecutor singleton(String className, String junitMethod) {
-        return new JUnitTestExecutor(new JUnitTest(className, junitMethod));
-    }
-
-    public static JUnitTestExecutor singleton(Class<?> junitTest, String junitMethod) {
-        return new JUnitTestExecutor(new JUnitTest(junitTest, junitMethod));
+        return JUnitTestExecutor.testOrder(Collections.singletonList(fullMethodName));
     }
 
     public static JUnitTestExecutor skipMissing(final List<String> testOrder) {
         final List<JUnitTest> tests = new ArrayList<>();
-        final Set<JUnitTestResult> missingTests = new HashSet<>();
+        final Set<JUnitTestResult> knownResults = new HashSet<>();
 
         for (int i = 0; i < testOrder.size(); i++) {
             final String fullMethodName = testOrder.get(i);
@@ -104,12 +96,15 @@ class JUnitTestExecutor {
 
                 tests.add(test);
             } catch (ClassNotFoundException e) {
-                missingTests.add(JUnitTestResult.missing(fullMethodName));
+                knownResults.add(JUnitTestResult.missing(fullMethodName));
                 System.out.println("  Skipped missing test : " + fullMethodName);
+            } catch (ExceptionInInitializerError e) {
+                knownResults.add(JUnitTestResult.initFailure(e, fullMethodName));
+                System.out.println("Test failed in initialization: " + fullMethodName);
             }
         }
 
-        return new JUnitTestExecutor(tests, missingTests);
+        return new JUnitTestExecutor(tests, knownResults);
     }
 
     public static JUnitTestExecutor testOrder(final List<String> testOrder) throws ClassNotFoundException {
@@ -140,7 +135,7 @@ class JUnitTestExecutor {
     }
 
     private Set<JUnitTestResult> results(final Result re, final Map<String, Long> testRuntimes) {
-        final Set<JUnitTestResult> results = new HashSet<>(missingTests);
+        final Set<JUnitTestResult> results = new HashSet<>(knownResults);
         final Map<String, JUnitTest> passingTests = new HashMap<>();
 
         // We can only mark a test as passing if it actually ran.

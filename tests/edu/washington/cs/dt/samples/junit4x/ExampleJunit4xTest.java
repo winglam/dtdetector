@@ -23,7 +23,7 @@ public class ExampleJunit4xTest {
 
 	static int x = 1;
 
-	private static List<Integer> list = new ArrayList<>();
+	public static List<Integer> list = new ArrayList<>();
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -53,21 +53,17 @@ public class ExampleJunit4xTest {
 		Assert.assertEquals(1, list.size());
 	}
 
-        /*
 	@Test
 	public void testE() {
 		System.out.println("Assertion will fail");
 		Assert.assertEquals(false, true);
 	}
-        */
 
-        /*
 	@Test
 	public void testF() {
 		System.out.println("Assertion will fail");
 		Assert.assertEquals("message", "a", "b");
 	}
-        */
 
 	@Test(timeout = 1)
 	public void testTimeOut() {
