@@ -8,6 +8,7 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
 import org.junit.runner.manipulation.Filter;
+import org.junit.runner.manipulation.NoTestsRemainException;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
@@ -35,10 +36,9 @@ class JUnitTestExecutor {
     });
 
     public static Set<JUnitTestResult> runOrder(final List<String> testList,
-                                                  final boolean skipMissing,
-                                                  final boolean skipIncompatible,
-                                                  final boolean runSeparately)
-            throws ClassNotFoundException {
+                                                final boolean skipMissing,
+                                                final boolean runSeparately)
+            throws ClassNotFoundException{
         final JUnitTestExecutor executor;
         if (skipMissing) {
             executor = JUnitTestExecutor.skipMissing(testList);
@@ -47,9 +47,9 @@ class JUnitTestExecutor {
         }
 
         if (runSeparately) {
-            return executor.executeSeparately(skipIncompatible);
+            return executor.executeSeparately();
         } else {
-            return executor.executeWithJUnit4Runner(skipIncompatible);
+            return executor.executeWithJUnit4Runner();
         }
     }
 
@@ -144,6 +144,7 @@ class JUnitTestExecutor {
         }
 
         for (final Failure failure : re.getFailures()) {
+            System.out.println(failure.getDescription());
             // If the description is a test (that is, a single test), then handle it normally.
             // Otherwise, the ENTIRE class failed during initialization or some such thing.
             if (failure.getDescription().isTest()) {
@@ -186,6 +187,12 @@ class JUnitTestExecutor {
     }
 
     private Set<JUnitTestResult> execute(final Request r) {
+        // This will happen only if no tests are selected by the filter.
+        // In this case, we will throw an exception with a name that makes sense.
+        if (r.getRunner().getDescription().getClassName().equals("org.junit.runner.manipulation.Filter")) {
+            throw new EmptyTestListException(testOrder);
+        }
+
         final PrintStream currOut = System.out;
         final PrintStream currErr = System.err;
 
@@ -204,7 +211,7 @@ class JUnitTestExecutor {
         return results(re, testRuntimes);
     }
 
-    public Set<JUnitTestResult> executeSeparately(final boolean skipIncompatible) {
+    public Set<JUnitTestResult> executeSeparately() {
         final Set<JUnitTestResult> results = new HashSet<>();
 
         for (final JUnitTest test : testOrder) {
@@ -214,7 +221,7 @@ class JUnitTestExecutor {
         return results;
     }
 
-    public Set<JUnitTestResult> executeWithJUnit4Runner(final boolean skipIncompatible) {
+    public Set<JUnitTestResult> executeWithJUnit4Runner() {
         return execute(Request.classes(allClasses.toArray(new Class<?>[0]))
                 .filterWith(new TestOrderFilter())
                 .sortWith(new TestOrderComparator()));

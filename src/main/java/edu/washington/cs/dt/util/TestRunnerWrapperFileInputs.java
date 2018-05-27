@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import edu.washington.cs.dt.main.ImpactMain;
+import org.junit.runner.manipulation.NoTestsRemainException;
 
 /**
  * Beaware, also need to change TestRunnerWrapper
@@ -23,8 +24,13 @@ public class TestRunnerWrapperFileInputs {
      * args[1]: a file containing all tests
      * */
     public static void main(String[] args) throws IOException {
-        runTests(args);
-        System.exit(0);
+        try {
+            runTests(args);
+            System.exit(0);
+        } catch (EmptyTestListException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
     public static int runTests(String[] args) throws IOException {
         if(args.length < 2) {
@@ -55,7 +61,7 @@ public class TestRunnerWrapperFileInputs {
         try {
             /*create the StringBuilder to output results*/
             StringBuilder sb = new StringBuilder();
-            for (final JUnitTestResult result : JUnitTestExecutor.runOrder(tests, skipMissingTests, skipIncompatibleTests, runSeparately)) {
+            for (final JUnitTestResult result : JUnitTestExecutor.runOrder(tests, skipMissingTests, runSeparately)) {
                 result.output(sb);
                 testsExecuted++;
             }

@@ -11,6 +11,7 @@ import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.junit.runner.manipulation.NoTestsRemainException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,8 +26,8 @@ public class TestJUnitTestExecutor extends TestCase {
 		return new TestSuite(TestJUnitTestExecutor.class);
 	}
 
-	private static JUnitTestResult singletonResult(final JUnitTestExecutor executor) {
-	    return executor.executeWithJUnit4Runner(false).iterator().next();
+	private static JUnitTestResult singletonResult(final JUnitTestExecutor executor) throws NoTestsRemainException {
+	    return executor.executeWithJUnit4Runner().iterator().next();
     }
 
 	public void testPassJUnit3() throws Exception {
@@ -78,7 +79,7 @@ public class TestJUnitTestExecutor extends TestCase {
 		assertFalse(TestExecUtils.noStackTrace.equals(result.getStackTrace()));
 	}
 
-	public void testRunMultipleJUnit4() throws ClassNotFoundException {
+	public void testRunMultipleJUnit4() throws Exception {
 		final JUnitTestExecutor executor = JUnitTestExecutor.testOrder(
 				Arrays.asList(
 						"edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.testZ",
@@ -92,7 +93,7 @@ public class TestJUnitTestExecutor extends TestCase {
         // causing some tests (e.g. ExampleJunit4xTest.test1) to fail.
 		ExampleJunit4xTest.list.clear();
 
-		final Set<JUnitTestResult> results = executor.executeWithJUnit4Runner(false);
+		final Set<JUnitTestResult> results = executor.executeWithJUnit4Runner();
 
 		assertEquals(3, results.size());
 
@@ -109,7 +110,7 @@ public class TestJUnitTestExecutor extends TestCase {
         }
 	}
 
-	public void testRunSeparateAndTogether() throws ClassNotFoundException {
+	public void testRunSeparateAndTogether() throws Exception {
 		final List<String> testOrder =
             Arrays.asList(
                     "edu.washington.cs.dt.samples.junit4x.ExampleBeforeClassTests.testXsHasOneItemAndAddOne",
@@ -130,12 +131,12 @@ public class TestJUnitTestExecutor extends TestCase {
 		expectedSeparate.put("edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.testX", RESULT.PASS.name());
 		expectedSeparate.put("edu.washington.cs.dt.samples.junit4x.ExampleBeforeClassTests.testXsHasTwoItems", RESULT.ERROR.name());
 
-		checkExpected(expectedJUnitRunner, executor.executeWithJUnit4Runner(false));
+		checkExpected(expectedJUnitRunner, executor.executeWithJUnit4Runner());
 
 		// Need to clear the state between runs.
 		ExampleBeforeClassTests.xs.clear();
 
-		checkExpected(expectedSeparate, executor.executeSeparately(false));
+		checkExpected(expectedSeparate, executor.executeSeparately());
 	}
 
 	private void checkExpected(final Map<String, String> expected, final Set<JUnitTestResult> results) {

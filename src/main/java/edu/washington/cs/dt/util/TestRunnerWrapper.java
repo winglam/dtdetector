@@ -12,6 +12,7 @@ import junit.framework.TestResult;
 import junit.textui.TestRunner;
 import edu.washington.cs.dt.RESULT;
 import edu.washington.cs.dt.main.ImpactMain;
+import org.junit.runner.manipulation.NoTestsRemainException;
 
 /**
  * Beaware, also need to change TestRunnerWrapperFileInputs
@@ -35,7 +36,7 @@ public class TestRunnerWrapper {
         StringBuilder sb = new StringBuilder();
 
         try {
-            for (final JUnitTestResult result : JUnitTestExecutor.runOrder(Arrays.asList(tests), false, false, false)) {
+            for (final JUnitTestResult result : JUnitTestExecutor.runOrder(Arrays.asList(tests), false, false)) {
                 result.output(sb);
             }
 

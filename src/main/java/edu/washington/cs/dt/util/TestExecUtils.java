@@ -16,6 +16,7 @@ import junit.framework.TestFailure;
 
 import edu.washington.cs.dt.main.ImpactMain;
 import org.junit.runner.Description;
+import org.junit.runner.manipulation.NoTestsRemainException;
 import plume.Option;
 import edu.washington.cs.dt.OneTestExecResult;
 import edu.washington.cs.dt.RESULT;
@@ -71,7 +72,7 @@ public class TestExecUtils {
     		} catch (IOException e) {
     			e.printStackTrace();
     		}
-    		Utils.checkTrue(testsExecuted == testResults.size(), "Test num not equal. Results is size " + testResults.size() + ". Tests is size " + testsExecuted + ".");
+            Utils.checkTrue(testsExecuted == testResults.size(), "Test num not equal. Results is size " + testResults.size() + ". Tests is size " + testsExecuted + ".");
     		return testResults;
     	}
     }
@@ -199,7 +200,7 @@ public class TestExecUtils {
     		} catch (IOException e) {
     			e.printStackTrace();
     		}
-    		Utils.checkTrue(testsExecuted == testResults.size(), "Test num not equal. Results is size " + testResults.size() + ". Tests is size " + testsExecuted + ".");
+            Utils.checkTrue(testsExecuted == testResults.size(), "Test num not equal. Results is size " + testResults.size() + ". Tests is size " + testsExecuted + ".");
     		return testResults;
     	}
     }

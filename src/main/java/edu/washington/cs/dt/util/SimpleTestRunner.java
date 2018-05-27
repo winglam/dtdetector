@@ -5,6 +5,7 @@ package edu.washington.cs.dt.util;
 
 import junit.framework.TestResult;
 import junit.textui.TestRunner;
+import org.junit.runner.manipulation.NoTestsRemainException;
 
 import java.util.Set;
 
@@ -31,7 +32,7 @@ public class SimpleTestRunner {
 	        		e.printStackTrace();
 	        		System.exit(0);
 	        	}
-				final Set<JUnitTestResult> results = executor.executeWithJUnit4Runner(false);
+				final Set<JUnitTestResult> results = executor.executeWithJUnit4Runner();
 				System.out.println("executing: ? " + fullTestName + ", successfully? " + results.iterator().next().getResult());
 			} else {
 				try {
