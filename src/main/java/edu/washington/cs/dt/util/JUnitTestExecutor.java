@@ -8,9 +8,9 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
 import org.junit.runner.manipulation.Filter;
-import org.junit.runner.manipulation.NoTestsRemainException;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
+import org.junit.runners.model.InitializationError;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -70,7 +70,7 @@ class JUnitTestExecutor {
         for (final JUnitTest test : tests) {
             if (test.isClassCompatible()) {
                 testOrder.add(test);
-                allClasses.add(test.testClass());
+                allClasses.add(test.javaClass());
                 testMap.put(test.name(), test);
             } else {
                 System.out.println("  Detected incompatible test case with RunWith annotation.");
@@ -164,7 +164,7 @@ class JUnitTestExecutor {
 
                 // Make a set first so that we can modify the original hash map
                 for (final JUnitTest test : testOrder) {
-                    if (test.testClass().getCanonicalName().equals(className)) {
+                    if (test.javaClass().getCanonicalName().equals(className)) {
                         results.add(JUnitTestResult.failOrError(failure, 0, test));
 
                         if (passingTests.containsKey(test.name())) {
@@ -186,10 +186,10 @@ class JUnitTestExecutor {
         return results;
     }
 
-    private Set<JUnitTestResult> execute(final Request r) {
+    private Set<JUnitTestResult> execute(final List<JUnitTest> tests) {
         // This will happen only if no tests are selected by the filter.
         // In this case, we will throw an exception with a name that makes sense.
-        if (r.getRunner().getDescription().getClassName().equals("org.junit.runner.manipulation.Filter")) {
+        if (tests.size() == 0) {
             throw new EmptyTestListException(testOrder);
         }
 
@@ -203,28 +203,33 @@ class JUnitTestExecutor {
 
         final Map<String, Long> testRuntimes = new HashMap<>();
         core.addListener(new TestTimeListener(testRuntimes));
-        final Result re = core.run(r);
+        final Result re;
+        try {
+            re = core.run(new JUnitTestRunner(tests));
 
 //        System.setOut(currOut);
 //        System.setErr(currErr);
 
-        return results(re, testRuntimes);
+            return results(re, testRuntimes);
+        } catch (InitializationError initializationError) {
+            initializationError.printStackTrace();
+        }
+
+        return new HashSet<>();
     }
 
     public Set<JUnitTestResult> executeSeparately() {
         final Set<JUnitTestResult> results = new HashSet<>();
 
         for (final JUnitTest test : testOrder) {
-            results.addAll(execute(test.request()));
+            results.addAll(execute(Collections.singletonList(test)));
         }
 
         return results;
     }
 
     public Set<JUnitTestResult> executeWithJUnit4Runner() {
-        return execute(Request.classes(allClasses.toArray(new Class<?>[0]))
-                .filterWith(new TestOrderFilter())
-                .sortWith(new TestOrderComparator()));
+        return execute(testOrder);
 	}
 
     private static class TestTimeListener extends RunListener {
@@ -253,45 +258,6 @@ class JUnitTestExecutor {
             } else {
                 System.out.println("Test finished but did not start: " + fullTestName);
             }
-        }
-    }
-
-    private class TestOrderFilter extends Filter {
-        @Override
-        public boolean shouldRun(final Description description) {
-            for (final JUnitTest test : testOrder) {
-                if (Filter.matchMethodDescription(test.description()).shouldRun(description)) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        @Override
-        public String describe() {
-            // Return the order we are running in.
-            final List<String> testNames = new ArrayList<>();
-            for (final JUnitTest test : testOrder) {
-                testNames.add(test.name());
-            }
-
-            return testNames.toString();
-        }
-    }
-
-    private class TestOrderComparator implements Comparator<Description> {
-        @Override
-        public int compare(Description a, Description b) {
-            if (testMap.containsKey(TestExecUtils.fullName(a))) {
-                if (testMap.containsKey(TestExecUtils.fullName(b))) {
-                    return Integer.compare(
-                            testMap.get(TestExecUtils.fullName(a)).index(),
-                            testMap.get(TestExecUtils.fullName(b)).index());
-                }
-            }
-
-            return 0;
         }
     }
 }

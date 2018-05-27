@@ -24,10 +24,17 @@ public class ExampleJunit4xTest {
 	static int x = 1;
 
 	public static List<Integer> list = new ArrayList<>();
+	public static int y = 2;
 
 	@BeforeClass
 	public static void beforeClass() {
 		list.add(1);
+	}
+
+	@Test
+	public void testK() {
+		System.out.println("Running testK");
+		Assert.assertEquals(4, y);
 	}
 
 	@Test

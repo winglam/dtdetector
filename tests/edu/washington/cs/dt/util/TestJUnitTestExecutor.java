@@ -84,7 +84,11 @@ public class TestJUnitTestExecutor extends TestCase {
 				Arrays.asList(
 						"edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.testZ",
 						"edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.testX",
-						"edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.test1"
+						"edu.washington.cs.dt.samples.junit4x.ExampleBeforeClassTests.testXsHasOneItemAndAddOne",
+						"edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.test1",
+						"edu.washington.cs.dt.samples.junit4x.ExampleBeforeClassTests.testXsHasTwoItems",
+						"edu.washington.cs.dt.samples.junit4x.ExampleBeforeClassTests.interactWithJunit4xTest",
+						"edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.testK"
 				)
 		);
 
@@ -93,21 +97,16 @@ public class TestJUnitTestExecutor extends TestCase {
         // causing some tests (e.g. ExampleJunit4xTest.test1) to fail.
 		ExampleJunit4xTest.list.clear();
 
-		final Set<JUnitTestResult> results = executor.executeWithJUnit4Runner();
+		final Map<String, String> expected = new HashMap<>();
+		expected.put("edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.test1", RESULT.PASS.name());
+		expected.put("edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.testX", RESULT.PASS.name());
+		expected.put("edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.testZ", RESULT.ERROR.name());
+		expected.put("edu.washington.cs.dt.samples.junit4x.ExampleBeforeClassTests.testXsHasOneItemAndAddOne", RESULT.PASS.name());
+		expected.put("edu.washington.cs.dt.samples.junit4x.ExampleBeforeClassTests.testXsHasTwoItems", RESULT.PASS.name());
+		expected.put("edu.washington.cs.dt.samples.junit4x.ExampleBeforeClassTests.interactWithJunit4xTest", RESULT.PASS.name());
+		expected.put("edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.testK", RESULT.PASS.name());
 
-		assertEquals(3, results.size());
-
-		for (final JUnitTestResult result : results) {
-		    if (result.getTest().name().equals("edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.test1")) {
-		        assertEquals(RESULT.PASS.name(), result.getResult());
-            } else if (result.getTest().name().equals("edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.testX")) {
-                assertEquals(RESULT.PASS.name(), result.getResult());
-            } else if (result.getTest().name().equals("edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.testZ")) {
-                assertEquals(RESULT.ERROR.name(), result.getResult());
-            } else {
-		        fail("Unexpected test run: " + result.getTest().name());
-            }
-        }
+		checkExpected(expected, executor.executeWithJUnit4Runner());
 	}
 
 	public void testRunSeparateAndTogether() throws Exception {
@@ -131,6 +130,9 @@ public class TestJUnitTestExecutor extends TestCase {
 		expectedSeparate.put("edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.testX", RESULT.PASS.name());
 		expectedSeparate.put("edu.washington.cs.dt.samples.junit4x.ExampleBeforeClassTests.testXsHasTwoItems", RESULT.ERROR.name());
 
+		// Need to clear the state between runs.
+		ExampleBeforeClassTests.xs.clear();
+
 		checkExpected(expectedJUnitRunner, executor.executeWithJUnit4Runner());
 
 		// Need to clear the state between runs.
@@ -143,6 +145,10 @@ public class TestJUnitTestExecutor extends TestCase {
 		Assert.assertEquals(expected.size(), results.size());
 
 		for (final JUnitTestResult result : results) {
+			if (!expected.containsKey(result.getTest().name())) {
+				fail("Ran unexpected test: " + result.getTest().name());
+			}
+
 			Assert.assertEquals(expected.get(result.getTest().name()), result.getResult());
 		}
 	}
