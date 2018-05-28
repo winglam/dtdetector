@@ -1,6 +1,8 @@
 package edu.washington.cs.dt.util;
 
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.internal.AssumptionViolatedException;
@@ -17,6 +19,7 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -92,12 +95,43 @@ public class JUnitTestRunner extends BlockJUnit4ClassRunner {
         return new RunAfters(statement, afters, null);
     }
 
+    private Statement withBefores(JUnitTest test, Object target,
+                                  Statement statement) {
+        List<FrameworkMethod> befores = test.testClass().getAnnotatedMethods(Before.class);
+        for (final Method method : test.javaClass().getDeclaredMethods()) {
+            if (method.getName().toLowerCase().equals("setup")) {
+                method.setAccessible(true);
+                befores.add(new FrameworkMethod(method));
+            }
+        }
+        return befores.isEmpty() ? statement : new RunBefores(statement,
+                befores, target);
+    }
+
+    private Statement withAfters(JUnitTest test, Object target,
+                                 Statement statement) {
+        List<FrameworkMethod> afters = test.testClass().getAnnotatedMethods(After.class);
+        for (final Method method : test.javaClass().getDeclaredMethods()) {
+            if (method.getName().toLowerCase().equals("teardown")) {
+                method.setAccessible(true);
+                afters.add(new FrameworkMethod(method));
+            }
+        }
+        return afters.isEmpty() ? statement : new RunAfters(statement, afters,
+                target);
+    }
+
     private Statement methodBlock(final JUnitTest test) {
         Object testObj;
         try {
             testObj = (new ReflectiveCallable() {
                 protected Object runReflectiveCall() throws Throwable {
-                    return test.testClass().getOnlyConstructor().newInstance();
+                    // for JUnit 3.8.2
+                    try {
+                        return test.javaClass().getConstructor(String.class).newInstance(test.getTestName());
+                    } catch (NoSuchMethodException e) {
+                        return test.testClass().getOnlyConstructor().newInstance();
+                    }
                 }
             }).run();
         } catch (Throwable e) {
@@ -109,8 +143,8 @@ public class JUnitTestRunner extends BlockJUnit4ClassRunner {
         Statement statement = this.methodInvoker(method, testObj);
         statement = this.possiblyExpectingExceptions(method, testObj, statement);
         statement = this.withPotentialTimeout(method, testObj, statement);
-        statement = this.withBefores(method, testObj, statement);
-        statement = this.withAfters(method, testObj, statement);
+        statement = this.withBefores(test, testObj, statement);
+        statement = this.withAfters(test, testObj, statement);
         return statement;
     }
 

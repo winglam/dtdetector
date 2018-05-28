@@ -101,4 +101,8 @@ public class JUnitTest {
 
         return null;
     }
+
+    public String getTestName() {
+        return junitMethod;
+    }
 }
