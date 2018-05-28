@@ -139,7 +139,7 @@ public class Main {
 	    }
 	    if(help) {
 	    	Utils.flushToStd(new String[]{VERSION});
-	    	Utils.flushToStd(options.usage());
+	    	Utils.flushToStd(new String[]{options.usage()});
 	        System.exit(1);
 	    }
 	    List<String> errorMsg = new LinkedList<String>();
@@ -170,7 +170,7 @@ public class Main {
 	    }
 	    if(!errorMsg.isEmpty()) {
 	    	Utils.flushToStd(errorMsg.toArray(new String[0]));
-	    	Utils.flushToStd(options.usage());
+	    	Utils.flushToStd(new String[] {options.usage()});
 	        System.exit(1);
 	    }
 	    //set the verbose

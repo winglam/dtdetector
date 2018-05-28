@@ -1,10 +1,10 @@
 package edu.washington.cs.dt.util;
 
-import checkers.nullness.quals.Nullable;
 import edu.washington.cs.dt.RESULT;
 import edu.washington.cs.dt.main.Main;
 import junit.framework.AssertionFailedError;
 import junit.framework.ComparisonFailure;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.runner.notification.Failure;
 
 import java.util.regex.Pattern;
@@ -47,6 +47,15 @@ public class JUnitTestResult {
 
     public static JUnitTestResult missing(final String fullMethodName) {
         return new JUnitTestResult(RESULT.SKIPPED.name(),
+                TestExecUtils.noStackTrace,
+                TestExecUtils.noStackTrace,
+                -1,
+                fullMethodName,
+                null);
+    }
+
+    public static JUnitTestResult ignored(String fullMethodName) {
+        return new JUnitTestResult(RESULT.IGNORED.name(),
                 TestExecUtils.noStackTrace,
                 TestExecUtils.noStackTrace,
                 -1,

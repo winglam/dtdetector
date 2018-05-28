@@ -93,11 +93,9 @@ public class JUnitTest {
         }
 
         // For JUnit 3, we don't have annotations, so just look through every method in the class.
-        for (final Method method : clz.getJavaClass().getDeclaredMethods()) {
-            final FrameworkMethod fMethod = new FrameworkMethod(method);
-
-            if (methodName(fMethod).equals(name())) {
-                return fMethod;
+        for (final Method method : clz.getJavaClass().getMethods()) {
+            if (method.getName().equals(junitMethod)) {
+                return new FrameworkMethod(method);
             }
         }
 

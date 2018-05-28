@@ -87,6 +87,11 @@
             <version>14.0.1</version>
         </dependency>
         <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+        </dependency>
+        <dependency>
             <groupId>plume</groupId>
             <artifactId>plume</artifactId>
             <version>1.0</version>

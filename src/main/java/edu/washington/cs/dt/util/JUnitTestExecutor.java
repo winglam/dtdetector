@@ -5,9 +5,7 @@ package edu.washington.cs.dt.util;
 
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
-import org.junit.runner.Request;
 import org.junit.runner.Result;
-import org.junit.runner.manipulation.Filter;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 import org.junit.runners.model.InitializationError;
@@ -16,7 +14,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -55,7 +52,6 @@ class JUnitTestExecutor {
 
 	private final List<JUnitTest> testOrder = new ArrayList<>();
     private final Map<String, JUnitTest> testMap = new HashMap<>();
-	private final Set<Class<?>> allClasses = new HashSet<>();
 	private final Set<JUnitTestResult> knownResults = new HashSet<>();
 
     public JUnitTestExecutor(final JUnitTest test) {
@@ -70,7 +66,6 @@ class JUnitTestExecutor {
         for (final JUnitTest test : tests) {
             if (test.isClassCompatible()) {
                 testOrder.add(test);
-                allClasses.add(test.javaClass());
                 testMap.put(test.name(), test);
             } else {
                 System.out.println("  Detected incompatible test case with RunWith annotation.");
@@ -134,28 +129,27 @@ class JUnitTestExecutor {
         return true;
     }
 
-    private Set<JUnitTestResult> results(final Result re, final Map<String, Long> testRuntimes) {
+    private Set<JUnitTestResult> results(final Result re, final TestListener listener) {
         final Set<JUnitTestResult> results = new HashSet<>(knownResults);
         final Map<String, JUnitTest> passingTests = new HashMap<>();
 
         // We can only mark a test as passing if it actually ran.
-        for (final String testName : testRuntimes.keySet()) {
+        for (final String testName : listener.runtimes().keySet()) {
             passingTests.put(testName, testMap.get(testName));
         }
 
         for (final Failure failure : re.getFailures()) {
-            System.out.println(failure.getDescription());
             // If the description is a test (that is, a single test), then handle it normally.
             // Otherwise, the ENTIRE class failed during initialization or some such thing.
             if (failure.getDescription().isTest()) {
                 final String fullTestName = TestExecUtils.fullName(failure.getDescription());
 
-                if (!checkContains(testRuntimes, passingTests, fullTestName)) {
+                if (!checkContains(listener.runtimes(), passingTests, fullTestName)) {
                     continue;
                 }
 
                 results.add(JUnitTestResult.failOrError(failure,
-                        testRuntimes.get(fullTestName),
+                        listener.runtimes().get(fullTestName),
                         passingTests.get(fullTestName)));
                 passingTests.remove(fullTestName);
             } else {
@@ -175,12 +169,19 @@ class JUnitTestExecutor {
             }
         }
 
+        for (final String fullMethodName : listener.ignored()) {
+            if (passingTests.containsKey(fullMethodName)) {
+                results.add(JUnitTestResult.ignored(fullMethodName));
+                passingTests.remove(fullMethodName);
+            }
+        }
+
         for (final String fullMethodName : passingTests.keySet()) {
-            if (!checkContains(testRuntimes, passingTests, fullMethodName)) {
+            if (!checkContains(listener.runtimes(), passingTests, fullMethodName)) {
                 continue;
             }
 
-            results.add(JUnitTestResult.passing(testRuntimes.get(fullMethodName), passingTests.get(fullMethodName)));
+            results.add(JUnitTestResult.passing(listener.runtimes().get(fullMethodName), passingTests.get(fullMethodName)));
         }
 
         return results;
@@ -201,8 +202,8 @@ class JUnitTestExecutor {
 
         final JUnitCore core = new JUnitCore();
 
-        final Map<String, Long> testRuntimes = new HashMap<>();
-        core.addListener(new TestTimeListener(testRuntimes));
+        final TestListener listener = new TestListener();
+        core.addListener(listener);
         final Result re;
         try {
             re = core.run(new JUnitTestRunner(tests));
@@ -210,7 +211,7 @@ class JUnitTestExecutor {
 //        System.setOut(currOut);
 //        System.setErr(currErr);
 
-            return results(re, testRuntimes);
+            return results(re, listener);
         } catch (InitializationError initializationError) {
             initializationError.printStackTrace();
         }
@@ -232,18 +233,32 @@ class JUnitTestExecutor {
         return execute(testOrder);
 	}
 
-    private static class TestTimeListener extends RunListener {
+    private static class TestListener extends RunListener {
         private final Map<String, Long> times;
         private final Map<String, Long> testRuntimes;
+        private final Set<String> ignoredTests;
 
-        public TestTimeListener(Map<String, Long> testRuntimes) {
-            this.testRuntimes = testRuntimes;
+        public TestListener() {
+            testRuntimes = new HashMap<>();
             times = new HashMap<>();
+            ignoredTests = new HashSet<>();
+        }
+
+        public Set<String> ignored() {
+            return ignoredTests;
+        }
+
+        public Map<String, Long> runtimes() {
+            return testRuntimes;
+        }
+
+        @Override
+        public void testIgnored(Description description) throws Exception {
+            ignoredTests.add(TestExecUtils.fullName(description));
         }
 
         @Override
         public void testStarted(Description description) throws Exception {
-            System.out.println("Test being executed: " + TestExecUtils.fullName(description));
             times.put(TestExecUtils.fullName(description), System.nanoTime());
         }
 

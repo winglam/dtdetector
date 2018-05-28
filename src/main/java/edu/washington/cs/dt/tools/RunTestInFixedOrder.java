@@ -89,7 +89,7 @@ public class RunTestInFixedOrder {
 	        System.exit(1);
 	    }
 	    if(help) {
-	    	Utils.flushToStd(options.usage());
+	    	Utils.flushToStd(new String[] {options.usage()});
 	        System.exit(1);
 	    }
 	    List<String> errorMsg = new LinkedList<String>();
@@ -98,7 +98,7 @@ public class RunTestInFixedOrder {
 	    }
 	    if(!errorMsg.isEmpty()) {
 	    	Utils.flushToStd(errorMsg.toArray(new String[0]));
-	    	Utils.flushToStd(options.usage());
+	    	Utils.flushToStd(new String[] {options.usage()});
 	        System.exit(1);
 	    }
 	}

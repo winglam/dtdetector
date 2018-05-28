@@ -33,11 +33,23 @@ public class JUnitTestRunner extends BlockJUnit4ClassRunner {
     }
 
     @Override
+    protected List<FrameworkMethod> getChildren() {
+        final List<FrameworkMethod> children = new ArrayList<>();
+
+        for (final JUnitTest test : tests) {
+            children.add(test.frameworkMethod());
+        }
+
+        return children;
+    }
+
+    @Override
     public void run(RunNotifier notifier) {
         EachTestNotifier testNotifier = new EachTestNotifier(notifier, this.getDescription());
 
         try {
             for (final JUnitTest test : tests) {
+                System.out.println("Test being executed: " + TestExecUtils.fullName(test.description()));
                 runChild(test, notifier);
             }
         } catch (AssumptionViolatedException e) {
@@ -105,7 +117,12 @@ public class JUnitTestRunner extends BlockJUnit4ClassRunner {
     private void runChild(JUnitTest test, RunNotifier notifier) {
         final FrameworkMethod method = test.frameworkMethod();
 
-        final EachTestNotifier eachNotifier = makeNotifier(method, notifier);
+        if (method == null) {
+            System.out.println("Test method not found: " + test.name());
+            throw new TestNotFoundException(test);
+        }
+
+        final EachTestNotifier eachNotifier = new EachTestNotifier(notifier, test.description());
 
         if (method.getAnnotation(Ignore.class) != null) {
             eachNotifier.fireTestIgnored();
@@ -137,6 +154,9 @@ public class JUnitTestRunner extends BlockJUnit4ClassRunner {
 
     @Override
     protected Description describeChild(FrameworkMethod method) {
+        if (method == null) {
+            return Description.EMPTY;
+        }
         return Description.createTestDescription(method.getMethod().getDeclaringClass(), method.getName());
     }
 }
