@@ -97,7 +97,7 @@ public class JUnitTestResult {
 	}
 
     public void output(StringBuilder sb) {
-        sb.append(test.name());
+        sb.append(testName);
         sb.append(TestExecUtils.timeSep);
         sb.append(interval);
         sb.append(TestExecUtils.testResultSep);

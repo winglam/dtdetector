@@ -310,6 +310,9 @@ public class TestExecUtils {
             } else if (result.equals(RESULT.SKIPPED.name())) {
                 OneTestExecResult r = new OneTestExecResult(RESULT.SKIPPED, fullStacktrace, Long.parseLong(time));
                 ret.put(testCase, r);
+            } else if (result.equals(RESULT.IGNORED.name())) {
+                OneTestExecResult r = new OneTestExecResult(RESULT.IGNORED, fullStacktrace, Long.parseLong(time));
+                ret.put(testCase, r);
             } else {
                 throw new RuntimeException("Unknown result: " + result);
             }

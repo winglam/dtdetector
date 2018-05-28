@@ -24,6 +24,7 @@ public class TestExecResult {
     protected List<String> failingTestsInOrder = new LinkedList<String>();
     protected List<String> errorTestsInOrder = new LinkedList<String>();
     protected List<String> skippedTestsInOrder = new LinkedList<String>();
+    protected List<String> ignoredTestsInOrder = new LinkedList<>();
     protected Map<String, RESULT> nameToResultsMap = new HashMap<String, RESULT>();
 
     public TestExecResult(Map<String, OneTestExecResult> singleRun) {
@@ -44,6 +45,9 @@ public class TestExecResult {
                 nameToResultsMap.put(test, RESULT.ERROR);
             } else if (r.result.equals(RESULT.SKIPPED)) {
                 this.skippedTestsInOrder.add(test);
+                nameToResultsMap.put(test, RESULT.SKIPPED);
+            } else if (r.result.equals(RESULT.IGNORED)) {
+                this.ignoredTestsInOrder.add(test);
                 nameToResultsMap.put(test, RESULT.SKIPPED);
             } else {
                 throw new RuntimeException("Unknown results: " + r);

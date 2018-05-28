@@ -170,10 +170,7 @@ class JUnitTestExecutor {
         }
 
         for (final String fullMethodName : listener.ignored()) {
-            if (passingTests.containsKey(fullMethodName)) {
-                results.add(JUnitTestResult.ignored(fullMethodName));
-                passingTests.remove(fullMethodName);
-            }
+            results.add(JUnitTestResult.ignored(fullMethodName));
         }
 
         for (final String fullMethodName : passingTests.keySet()) {
