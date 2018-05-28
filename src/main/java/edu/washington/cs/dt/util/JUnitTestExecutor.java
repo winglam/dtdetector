@@ -68,7 +68,8 @@ class JUnitTestExecutor {
                 testOrder.add(test);
                 testMap.put(test.name(), test);
             } else {
-                System.out.println("  Detected incompatible test case with RunWith annotation.");
+                System.out.println("  Detected incompatible test case (" + test.name() + ")");
+                knownResults.add(JUnitTestResult.missing(test));
             }
         }
 

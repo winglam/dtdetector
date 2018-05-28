@@ -54,6 +54,15 @@ public class JUnitTestResult {
                 null);
     }
 
+    public static JUnitTestResult missing(final JUnitTest test) {
+        return new JUnitTestResult(RESULT.SKIPPED.name(),
+                TestExecUtils.noStackTrace,
+                TestExecUtils.noStackTrace,
+                -1,
+                test.name(),
+                test);
+    }
+
     public static JUnitTestResult ignored(String fullMethodName) {
         return new JUnitTestResult(RESULT.IGNORED.name(),
                 TestExecUtils.noStackTrace,

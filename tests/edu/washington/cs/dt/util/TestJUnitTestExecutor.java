@@ -7,13 +7,10 @@ import edu.washington.cs.dt.RESULT;
 import edu.washington.cs.dt.samples.SampleJUnit3Tests;
 import edu.washington.cs.dt.samples.junit4x.ExampleBeforeClassTests;
 import edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest;
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.junit.runner.manipulation.NoTestsRemainException;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +23,7 @@ public class TestJUnitTestExecutor extends TestCase {
 		return new TestSuite(TestJUnitTestExecutor.class);
 	}
 
-	private static JUnitTestResult singletonResult(final JUnitTestExecutor executor) throws NoTestsRemainException {
+	private static JUnitTestResult singletonResult(final JUnitTestExecutor executor) {
 	    return executor.executeWithJUnit4Runner().iterator().next();
     }
 
@@ -142,14 +139,14 @@ public class TestJUnitTestExecutor extends TestCase {
 	}
 
 	private void checkExpected(final Map<String, String> expected, final Set<JUnitTestResult> results) {
-		Assert.assertEquals(expected.size(), results.size());
+		assertEquals(expected.size(), results.size());
 
 		for (final JUnitTestResult result : results) {
 			if (!expected.containsKey(result.getTest().name())) {
 				fail("Ran unexpected test: " + result.getTest().name());
 			}
 
-			Assert.assertEquals(expected.get(result.getTest().name()), result.getResult());
+			assertEquals(expected.get(result.getTest().name()), result.getResult());
 		}
 	}
 }
