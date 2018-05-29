@@ -10,15 +10,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class Utils {
 	
@@ -186,5 +190,15 @@ public class Utils {
 		} catch (ClassNotFoundException e) {
 		}
 		return null;
+	}
+
+	public static List<Method> getAllMethods(final Class<?> clz) {
+		final List<Method> methods = new ArrayList<>(Arrays.asList(clz.getDeclaredMethods()));
+
+		if (clz.getSuperclass() != null) {
+			methods.addAll(getAllMethods(clz.getSuperclass()));
+		}
+
+		return methods;
 	}
 }

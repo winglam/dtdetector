@@ -85,40 +85,52 @@ public class JUnitTestRunner extends BlockJUnit4ClassRunner {
         return true;
     }
 
-    private Statement withBeforeClasses(final JUnitTest test, final Statement statement) {
+    private Statement beforeClasses(final JUnitTest test) {
         final List<FrameworkMethod> befores = test.testClass().getAnnotatedMethods(BeforeClass.class);
-        return new RunBefores(statement, befores, null);
+        return new RunBefores(new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                // Intentionally empty.
+            }
+        }, befores, null);
     }
 
-    private Statement withAfterClasses(final JUnitTest test, final Statement statement) {
+    private Statement afterClasses(final JUnitTest test) {
         final List<FrameworkMethod> afters = test.testClass().getAnnotatedMethods(AfterClass.class);
-        return new RunAfters(statement, afters, null);
+        return new RunAfters(new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                // Intentionally empty.
+            }
+        }, afters, null);
     }
 
     private Statement withBefores(JUnitTest test, Object target,
                                   Statement statement) {
         List<FrameworkMethod> befores = test.testClass().getAnnotatedMethods(Before.class);
-        for (final Method method : test.javaClass().getDeclaredMethods()) {
+
+        for (final Method method : Utils.getAllMethods(test.javaClass())) {
             if (method.getName().toLowerCase().equals("setup")) {
                 method.setAccessible(true);
                 befores.add(new FrameworkMethod(method));
             }
         }
-        return befores.isEmpty() ? statement : new RunBefores(statement,
-                befores, target);
+
+        return befores.isEmpty() ? statement : new RunBefores(statement, befores, target);
     }
 
     private Statement withAfters(JUnitTest test, Object target,
                                  Statement statement) {
         List<FrameworkMethod> afters = test.testClass().getAnnotatedMethods(After.class);
-        for (final Method method : test.javaClass().getDeclaredMethods()) {
+
+        for (final Method method : Utils.getAllMethods(test.javaClass())) {
             if (method.getName().toLowerCase().equals("teardown")) {
                 method.setAccessible(true);
                 afters.add(new FrameworkMethod(method));
             }
         }
-        return afters.isEmpty() ? statement : new RunAfters(statement, afters,
-                target);
+
+        return afters.isEmpty() ? statement : new RunAfters(statement, afters, target);
     }
 
     private Statement methodBlock(final JUnitTest test) {
@@ -168,14 +180,18 @@ public class JUnitTestRunner extends BlockJUnit4ClassRunner {
 
                 if (!ranBeforeClass(method)) {
                     ranBeforeClassSet.add(method.getMethod().getDeclaringClass().getCanonicalName());
-                    statement = withBeforeClasses(test, statement);
-                }
-
-                if (isLastMethod(method)) {
-                    statement = withAfterClasses(test, statement);
+                    // Run this way so it doesn't show up in the stack trace for the test and possibly cause the tools
+                    // to incorrectly label it as dependent
+                    beforeClasses(test).evaluate();
                 }
 
                 statement.evaluate();
+
+                if (isLastMethod(method)) {
+                    // Run this way so it doesn't show up in the stack trace for the test and possibly cause the tools
+                    // to incorrectly label it as dependent
+                    afterClasses(test).evaluate();
+                }
             } catch (AssumptionViolatedException e) {
                 eachNotifier.addFailedAssumption(e);
             } catch (Throwable e) {

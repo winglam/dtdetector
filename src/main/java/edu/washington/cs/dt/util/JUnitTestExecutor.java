@@ -262,13 +262,11 @@ class JUnitTestExecutor {
 
         @Override
         public void testFailure(Failure failure) throws Exception {
-            System.out.println(TestExecUtils.fullName(failure.getDescription()) + " failed.");
             failure.getException().printStackTrace();
         }
 
         @Override
         public void testAssumptionFailure(Failure failure) {
-            System.out.println(TestExecUtils.fullName(failure.getDescription()) + " failed (assumption).");
             failure.getException().printStackTrace();
         }
 
