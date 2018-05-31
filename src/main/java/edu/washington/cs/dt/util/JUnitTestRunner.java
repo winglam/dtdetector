@@ -107,12 +107,17 @@ public class JUnitTestRunner extends BlockJUnit4ClassRunner {
 
     private Statement withBefores(JUnitTest test, Object target,
                                   Statement statement) {
-        List<FrameworkMethod> befores = test.testClass().getAnnotatedMethods(Before.class);
+        List<FrameworkMethod> befores = new ArrayList<>(test.testClass().getAnnotatedMethods(Before.class));
 
         for (final Method method : Utils.getAllMethods(test.javaClass())) {
             if (method.getName().toLowerCase().equals("setup")) {
                 method.setAccessible(true);
-                befores.add(new FrameworkMethod(method));
+
+                final FrameworkMethod fMethod = new FrameworkMethod(method);
+
+                if (!befores.contains(fMethod)) {
+                    befores.add(fMethod);
+                }
             }
         }
 
@@ -121,12 +126,17 @@ public class JUnitTestRunner extends BlockJUnit4ClassRunner {
 
     private Statement withAfters(JUnitTest test, Object target,
                                  Statement statement) {
-        List<FrameworkMethod> afters = test.testClass().getAnnotatedMethods(After.class);
+        List<FrameworkMethod> afters = new ArrayList<>(test.testClass().getAnnotatedMethods(After.class));
 
         for (final Method method : Utils.getAllMethods(test.javaClass())) {
             if (method.getName().toLowerCase().equals("teardown")) {
                 method.setAccessible(true);
-                afters.add(new FrameworkMethod(method));
+
+                final FrameworkMethod fMethod = new FrameworkMethod(method);
+
+                if (!afters.contains(fMethod)) {
+                    afters.add(fMethod);
+                }
             }
         }
 
