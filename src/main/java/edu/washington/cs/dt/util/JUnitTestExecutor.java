@@ -134,9 +134,16 @@ class JUnitTestExecutor {
         final Set<JUnitTestResult> results = new HashSet<>(knownResults);
         final Map<String, JUnitTest> passingTests = new HashMap<>();
 
+        // So we can keep track of tests that didn't get run (i.e., skipped).
+        final Map<String, JUnitTest> allTests = new HashMap<>(testMap);
+
         // We can only mark a test as passing if it actually ran.
         for (final String testName : listener.runtimes().keySet()) {
-            passingTests.put(testName, testMap.get(testName));
+            if (testMap.containsKey(testName)) {
+                passingTests.put(testName, testMap.get(testName));
+            } else {
+                System.out.println("[ERROR] Unexpected test executed: " + testName);
+            }
         }
 
         for (final Failure failure : re.getFailures()) {
@@ -153,6 +160,7 @@ class JUnitTestExecutor {
                         listener.runtimes().get(fullTestName),
                         passingTests.get(fullTestName)));
                 passingTests.remove(fullTestName);
+                allTests.remove(fullTestName);
             } else {
                 // The ENTIRE class failed, so we need to mark every test from this class as failing.
                 final String className = failure.getDescription().getClassName();
@@ -164,6 +172,7 @@ class JUnitTestExecutor {
 
                         if (passingTests.containsKey(test.name())) {
                             passingTests.remove(test.name());
+                            allTests.remove(test.name());
                         }
                     }
                 }
@@ -172,6 +181,7 @@ class JUnitTestExecutor {
 
         for (final String fullMethodName : listener.ignored()) {
             results.add(JUnitTestResult.ignored(fullMethodName));
+            allTests.remove(fullMethodName);
         }
 
         for (final String fullMethodName : passingTests.keySet()) {
@@ -180,6 +190,11 @@ class JUnitTestExecutor {
             }
 
             results.add(JUnitTestResult.passing(listener.runtimes().get(fullMethodName), passingTests.get(fullMethodName)));
+            allTests.remove(fullMethodName);
+        }
+
+        for (final String fullMethodName : allTests.keySet()) {
+            results.add(JUnitTestResult.missing(fullMethodName));
         }
 
         return results;
