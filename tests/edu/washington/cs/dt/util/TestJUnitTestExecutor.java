@@ -12,6 +12,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -136,6 +137,20 @@ public class TestJUnitTestExecutor extends TestCase {
 		ExampleBeforeClassTests.xs.clear();
 
 		checkExpected(expectedSeparate, executor.executeSeparately());
+	}
+
+	public void testUseCustomRunner() throws Exception {
+		final List<String> testOrder =
+				Collections.singletonList(
+						"edu.washington.cs.dt.samples.junit4x.SampleTestRunnerTests.test1"
+				);
+
+		final JUnitTestExecutor executor = JUnitTestExecutor.testOrder(testOrder);
+		final Map<String, String> expected = new HashMap<>();
+
+		expected.put("edu.washington.cs.dt.samples.junit4x.SampleTestRunnerTests.test1", RESULT.PASS.name());
+
+		checkExpected(expected, executor.executeWithJUnit4Runner());
 	}
 
 	private void checkExpected(final Map<String, String> expected, final Set<JUnitTestResult> results) {

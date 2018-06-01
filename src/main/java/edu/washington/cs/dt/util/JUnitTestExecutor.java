@@ -277,7 +277,6 @@ class JUnitTestExecutor {
             if (times.containsKey(fullTestName)) {
                 final long startTime = times.get(fullTestName);
                 testRuntimes.put(fullTestName, System.nanoTime() - startTime);
-                times.remove(fullTestName);
             } else {
                 System.out.println("Test finished but did not start: " + fullTestName);
             }

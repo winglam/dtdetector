@@ -6,17 +6,22 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.internal.AssumptionViolatedException;
+import org.junit.internal.builders.AnnotatedBuilder;
 import org.junit.internal.runners.model.EachTestNotifier;
 import org.junit.internal.runners.model.ReflectiveCallable;
 import org.junit.internal.runners.statements.Fail;
 import org.junit.internal.runners.statements.RunAfters;
 import org.junit.internal.runners.statements.RunBefores;
 import org.junit.runner.Description;
+import org.junit.runner.RunWith;
+import org.junit.runner.Runner;
+import org.junit.runner.manipulation.Filter;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runner.notification.StoppedByUserException;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
+import org.junit.runners.model.RunnerBuilder;
 import org.junit.runners.model.Statement;
 
 import java.lang.reflect.Method;
@@ -28,6 +33,8 @@ import java.util.Set;
 public class JUnitTestRunner extends BlockJUnit4ClassRunner {
     private final Set<String> ranBeforeClassSet = new HashSet<>();
     private final List<JUnitTest> tests = new ArrayList<>();
+
+    private RunNotifier notifier = null;
 
     public JUnitTestRunner(final List<JUnitTest> tests) throws InitializationError {
         // Necessary so we can use all of the JUnit runner code written for BlockJUnit4ClassRunner.
@@ -48,6 +55,7 @@ public class JUnitTestRunner extends BlockJUnit4ClassRunner {
 
     @Override
     public void run(RunNotifier notifier) {
+        this.notifier = notifier;
         EachTestNotifier testNotifier = new EachTestNotifier(notifier, this.getDescription());
 
         try {
@@ -183,32 +191,69 @@ public class JUnitTestRunner extends BlockJUnit4ClassRunner {
         if (method.getAnnotation(Ignore.class) != null) {
             eachNotifier.fireTestIgnored();
         } else {
-            eachNotifier.fireTestStarted();
-
             try {
-                Statement statement = methodBlock(test);
+                Statement statement = usingClassRunner(test);
 
-                if (!ranBeforeClass(method)) {
-                    ranBeforeClassSet.add(method.getMethod().getDeclaringClass().getCanonicalName());
-                    // Run this way so it doesn't show up in the stack trace for the test and possibly cause the tools
-                    // to incorrectly label it as dependent
-                    beforeClasses(test).evaluate();
+                if (statement == null) {
+                    try {
+                        statement = methodBlock(test);
+
+                        eachNotifier.fireTestStarted();
+
+                        if (!ranBeforeClass(method)) {
+                            ranBeforeClassSet.add(method.getMethod().getDeclaringClass().getCanonicalName());
+                            // Run this way so it doesn't show up in the stack trace for the test and possibly cause the tools
+                            // to incorrectly label it as dependent
+                            beforeClasses(test).evaluate();
+                        }
+
+                        statement.evaluate();
+
+                        if (isLastMethod(method)) {
+                            // Run this way so it doesn't show up in the stack trace for the test and possibly cause the tools
+                            // to incorrectly label it as dependent
+                            afterClasses(test).evaluate();
+                        }
+                    } catch (AssumptionViolatedException e) {
+                        eachNotifier.addFailedAssumption(e);
+                    } catch (Throwable e) {
+                        eachNotifier.addFailure(e);
+                    } finally {
+                        eachNotifier.fireTestFinished();
+                    }
+                } else {
+                    // Here we assume that the statement returned will handle all beforeclass/afterclass and related methods.
+                    // it show also take care of notification (via the notifier field in this class).
+                    statement.evaluate();
                 }
-
-                statement.evaluate();
-
-                if (isLastMethod(method)) {
-                    // Run this way so it doesn't show up in the stack trace for the test and possibly cause the tools
-                    // to incorrectly label it as dependent
-                    afterClasses(test).evaluate();
-                }
-            } catch (AssumptionViolatedException e) {
+            }
+            // We catch these exceptions because the use of Statement.evaluate forces it,
+            // but these should be handled already (either inside the try or by the statement's execution).
+            catch (AssumptionViolatedException e) {
                 eachNotifier.addFailedAssumption(e);
             } catch (Throwable e) {
                 eachNotifier.addFailure(e);
-            } finally {
-                eachNotifier.fireTestFinished();
             }
+        }
+    }
+
+    private Statement usingClassRunner(final JUnitTest test) {
+        try {
+            final Runner runner = new AnnotatedBuilder(null).runnerForClass(test.javaClass());
+
+            if (runner != null) {
+                return new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        Filter.matchMethodDescription(test.description()).apply(runner);
+                        runner.run(notifier);
+                    }
+                };
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
         }
     }
 
