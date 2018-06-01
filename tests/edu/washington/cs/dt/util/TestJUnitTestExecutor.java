@@ -153,8 +153,22 @@ public class TestJUnitTestExecutor extends TestCase {
 		checkExpected(expected, executor.executeWithJUnit4Runner());
 	}
 
+	public void testUsesRules() throws Exception {
+		final List<String> testOrder =
+				Collections.singletonList(
+						"edu.washington.cs.dt.samples.junit4x.ExampleUsesRules.test1"
+				);
+
+		final JUnitTestExecutor executor = JUnitTestExecutor.testOrder(testOrder);
+		final Map<String, String> expected = new HashMap<>();
+
+		expected.put("edu.washington.cs.dt.samples.junit4x.ExampleUsesRules.test1", RESULT.PASS.name());
+
+		checkExpected(expected, executor.executeWithJUnit4Runner());
+	}
+
 	private void checkExpected(final Map<String, String> expected, final Set<JUnitTestResult> results) {
-		assertEquals(expected.size(), results.size());
+		assertEquals("Ran wrong number of tests", expected.size(), results.size());
 
 		for (final JUnitTestResult result : results) {
 			if (!expected.containsKey(result.getTest().name())) {

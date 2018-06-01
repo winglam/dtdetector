@@ -5,6 +5,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.internal.AssumptionViolatedException;
 import org.junit.internal.builders.AnnotatedBuilder;
 import org.junit.internal.runners.model.EachTestNotifier;
@@ -12,8 +13,10 @@ import org.junit.internal.runners.model.ReflectiveCallable;
 import org.junit.internal.runners.statements.Fail;
 import org.junit.internal.runners.statements.RunAfters;
 import org.junit.internal.runners.statements.RunBefores;
+import org.junit.rules.MethodRule;
+import org.junit.rules.RunRules;
+import org.junit.rules.TestRule;
 import org.junit.runner.Description;
-import org.junit.runner.RunWith;
 import org.junit.runner.Runner;
 import org.junit.runner.manipulation.Filter;
 import org.junit.runner.notification.RunNotifier;
@@ -21,7 +24,6 @@ import org.junit.runner.notification.StoppedByUserException;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
-import org.junit.runners.model.RunnerBuilder;
 import org.junit.runners.model.Statement;
 
 import java.lang.reflect.Method;
@@ -151,6 +153,56 @@ public class JUnitTestRunner extends BlockJUnit4ClassRunner {
         return afters.isEmpty() ? statement : new RunAfters(statement, afters, target);
     }
 
+    private Statement withRules(JUnitTest test, Object target, Statement statement) {
+        List<TestRule> testRules = getTestRules(test, target);
+        Statement result = statement;
+        result = withMethodRules(test, testRules, target, result);
+        result = withTestRules(test, testRules, result);
+
+        return result;
+    }
+
+    private Statement withMethodRules(JUnitTest test, List<TestRule> testRules,
+                                      Object target, Statement result) {
+        for (org.junit.rules.MethodRule each : getMethodRules(test, target)) {
+            if (!testRules.contains(each)) {
+                result = each.apply(result, test.frameworkMethod(), target);
+            }
+        }
+        return result;
+    }
+
+    private List<org.junit.rules.MethodRule> getMethodRules(final JUnitTest test, final Object target) {
+        return rules(test, target);
+    }
+
+    /**
+     * @param target the test case instance
+     * @return a list of MethodRules that should be applied when executing this
+     *         test
+     */
+    private List<MethodRule> rules(final JUnitTest test, final Object target) {
+        final List<MethodRule> rules = test.testClass().getAnnotatedMethodValues(target, Rule.class, MethodRule.class);
+
+        rules.addAll(test.testClass().getAnnotatedFieldValues(target, Rule.class, MethodRule.class));
+
+        return rules;
+    }
+
+    private Statement withTestRules(JUnitTest test, List<TestRule> testRules,
+                                    Statement statement) {
+        return testRules.isEmpty() ? statement :
+                new RunRules(statement, testRules, test.description());
+    }
+
+    private List<TestRule> getTestRules(JUnitTest test, Object target) {
+        List<TestRule> result = test.testClass().getAnnotatedMethodValues(target, Rule.class, TestRule.class);
+
+        result.addAll(test.testClass().getAnnotatedFieldValues(target, Rule.class, TestRule.class));
+
+        return result;
+    }
+
     private Statement methodBlock(final JUnitTest test) {
         Object testObj;
         try {
@@ -170,11 +222,12 @@ public class JUnitTestRunner extends BlockJUnit4ClassRunner {
 
         final FrameworkMethod method = test.frameworkMethod();
 
-        Statement statement = this.methodInvoker(method, testObj);
-        statement = this.possiblyExpectingExceptions(method, testObj, statement);
-        statement = this.withPotentialTimeout(method, testObj, statement);
-        statement = this.withBefores(test, testObj, statement);
-        statement = this.withAfters(test, testObj, statement);
+        Statement statement = methodInvoker(method, testObj);
+        statement = possiblyExpectingExceptions(method, testObj, statement);
+        statement = withPotentialTimeout(method, testObj, statement);
+        statement = withBefores(test, testObj, statement);
+        statement = withAfters(test, testObj, statement);
+        statement = withRules(test, testObj, statement);
         return statement;
     }
 
