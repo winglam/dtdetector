@@ -97,7 +97,7 @@ public class TestSequenceSimplifier {
 	        System.exit(1);
 	    }
 	    if(help) {
-	    	Utils.flushToStd(options.usage());
+	    	Utils.flushToStd(new String[] {options.usage()});
 	        System.exit(1);
 	    }
 	    if(logfile != null) {
@@ -111,7 +111,7 @@ public class TestSequenceSimplifier {
 	    }
 	    if(!errorMsg.isEmpty()) {
 	    	Utils.flushToStd(errorMsg.toArray(new String[0]));
-	    	Utils.flushToStd(options.usage());
+	    	Utils.flushToStd(new String[] {options.usage()});
 	        System.exit(1);
 	    }
 	}

@@ -25,4 +25,10 @@ public class ExampleBeforeClassTests {
     public void testXsHasTwoItems() {
         Assert.assertEquals(2, xs.size());
     }
+
+    @Test
+    public void interactWithJunit4xTest() {
+        ExampleJunit4xTest.y = 4;
+        Assert.assertEquals(8, xs.size() * ExampleJunit4xTest.y);
+    }
 }

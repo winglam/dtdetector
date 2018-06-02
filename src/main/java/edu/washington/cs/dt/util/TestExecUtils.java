@@ -71,7 +71,7 @@ public class TestExecUtils {
     		} catch (IOException e) {
     			e.printStackTrace();
     		}
-    		Utils.checkTrue(testsExecuted == testResults.size(), "Test num not equal. Results is size " + testResults.size() + ". Tests is size " + testsExecuted + ".");
+            Utils.checkTrue(testsExecuted == testResults.size(), "Test num not equal. Results is size " + testResults.size() + ". Tests is size " + testsExecuted + ".");
     		return testResults;
     	}
     }
@@ -199,7 +199,7 @@ public class TestExecUtils {
     		} catch (IOException e) {
     			e.printStackTrace();
     		}
-    		Utils.checkTrue(testsExecuted == testResults.size(), "Test num not equal. Results is size " + testResults.size() + ". Tests is size " + testsExecuted + ".");
+            Utils.checkTrue(testsExecuted == testResults.size(), "Test num not equal. Results is size " + testResults.size() + ". Tests is size " + testsExecuted + ".");
     		return testResults;
     	}
     }
@@ -308,6 +308,9 @@ public class TestExecUtils {
                 ret.put(testCase, r);
             } else if (result.equals(RESULT.SKIPPED.name())) {
                 OneTestExecResult r = new OneTestExecResult(RESULT.SKIPPED, fullStacktrace, Long.parseLong(time));
+                ret.put(testCase, r);
+            } else if (result.equals(RESULT.IGNORED.name())) {
+                OneTestExecResult r = new OneTestExecResult(RESULT.IGNORED, fullStacktrace, Long.parseLong(time));
                 ret.put(testCase, r);
             } else {
                 throw new RuntimeException("Unknown result: " + result);

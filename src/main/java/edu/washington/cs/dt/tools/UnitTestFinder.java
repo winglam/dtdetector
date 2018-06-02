@@ -160,8 +160,7 @@ public class UnitTestFinder {
 	        // System.exit(1);
 	    }
 	    if(help) {
-	    	Utils.flushToStd(options.usage());
-                System.out.println("Hi2");
+	    	Utils.flushToStd(new String[] {options.usage()});
 	        // System.exit(1);
 	    }
 	    List<String> errorMsg = new LinkedList<String>();
@@ -170,7 +169,7 @@ public class UnitTestFinder {
 	    }
 	    if(!errorMsg.isEmpty()) {
 	    	Utils.flushToStd(errorMsg.toArray(new String[0]));
-	    	Utils.flushToStd(options.usage());
+	    	Utils.flushToStd(new String[] {options.usage()});
 	        // System.exit(1);
 	    }
 	}

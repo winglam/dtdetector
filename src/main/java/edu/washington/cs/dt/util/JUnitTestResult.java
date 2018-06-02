@@ -1,10 +1,10 @@
 package edu.washington.cs.dt.util;
 
-import checkers.nullness.quals.Nullable;
 import edu.washington.cs.dt.RESULT;
 import edu.washington.cs.dt.main.Main;
 import junit.framework.AssertionFailedError;
 import junit.framework.ComparisonFailure;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.runner.notification.Failure;
 
 import java.util.regex.Pattern;
@@ -54,6 +54,24 @@ public class JUnitTestResult {
                 null);
     }
 
+    public static JUnitTestResult missing(final JUnitTest test) {
+        return new JUnitTestResult(RESULT.SKIPPED.name(),
+                TestExecUtils.noStackTrace,
+                TestExecUtils.noStackTrace,
+                -1,
+                test.name(),
+                test);
+    }
+
+    public static JUnitTestResult ignored(String fullMethodName) {
+        return new JUnitTestResult(RESULT.IGNORED.name(),
+                TestExecUtils.noStackTrace,
+                TestExecUtils.noStackTrace,
+                -1,
+                fullMethodName,
+                null);
+    }
+
     public static JUnitTestResult failOrError(final Failure failure,
                                               final long interval,
                                               final JUnitTest test) {
@@ -88,7 +106,7 @@ public class JUnitTestResult {
 	}
 
     public void output(StringBuilder sb) {
-        sb.append(test.name());
+        sb.append(testName);
         sb.append(TestExecUtils.timeSep);
         sb.append(interval);
         sb.append(TestExecUtils.testResultSep);
@@ -109,5 +127,12 @@ public class JUnitTestResult {
 
     public JUnitTest getTest() {
         return test;
+    }
+
+    public static JUnitTestResult initFailure(final ExceptionInInitializerError e, final String fullMethodName) {
+        final String stackTrace = flatStackTrace(e);
+        final String fullStackTrace = TestExecUtils.flatStrings(TestExecUtils.extractStackTraces(e));
+
+        return new JUnitTestResult(RESULT.FAILURE.name(), stackTrace, fullStackTrace, 0, fullMethodName, null);
     }
 }

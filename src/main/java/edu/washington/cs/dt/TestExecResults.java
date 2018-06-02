@@ -38,7 +38,7 @@ public class TestExecResults {
         for (TestExecResult r : executionRecords) {
             sb.append(Globals.lineSep);
             sb.append("Pass: " + r.passingTestsInOrder.size() + ", Fail: " + r.failingTestsInOrder.size() + ", Error: "
-                    + r.errorTestsInOrder.size() + ", Skipped: " + r.skippedTestsInOrder.size());
+                    + r.errorTestsInOrder.size() + ", Skipped: " + r.skippedTestsInOrder.size() + ", Ignored: " + r.ignoredTestsInOrder.size());
             sb.append(Globals.lineSep);
             sb.append(r.toString());
             sb.append(Globals.lineSep);

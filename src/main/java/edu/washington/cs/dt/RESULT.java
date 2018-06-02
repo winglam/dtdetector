@@ -3,4 +3,4 @@
  */
 package edu.washington.cs.dt;
 
-public enum RESULT {PASS, FAILURE, ERROR, SKIPPED }
+public enum RESULT {PASS, FAILURE, ERROR, SKIPPED, IGNORED }

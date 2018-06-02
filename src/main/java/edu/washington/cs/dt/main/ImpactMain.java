@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.jar.JarFile;
 
 import edu.washington.cs.dt.TestExecResults;
 import edu.washington.cs.dt.runners.AbstractTestRunner;
@@ -117,6 +118,16 @@ public class ImpactMain {
                 if (files != null) {
                     for (final File file : files) {
                         if (file.isFile() && file.getName().endsWith(".jar")) {
+                            // Try to open it and see if it contains JUnit.
+                            // If it does, we'll ignore this jar file so that it doesn't conflict with our version of JUnit.
+                            try {
+                                final JarFile jarFile = new JarFile(file);
+
+                                if (jarFile.getJarEntry("org/junit") != null) {
+                                    continue;
+                                }
+                            } catch (IOException ignored) {}
+
                             sb.append(path);
                             sb.append(file.getName());
                             sb.append(System.getProperty("path.separator"));
