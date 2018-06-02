@@ -5,14 +5,9 @@ package edu.washington.cs.dt.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-
-import edu.washington.cs.dt.main.ImpactMain;
-import org.junit.runner.manipulation.NoTestsRemainException;
 
 /**
  * Beaware, also need to change TestRunnerWrapper

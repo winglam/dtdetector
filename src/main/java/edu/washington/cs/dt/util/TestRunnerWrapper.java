@@ -7,13 +7,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
-import junit.framework.TestFailure;
-import junit.framework.TestResult;
-import junit.textui.TestRunner;
-import edu.washington.cs.dt.RESULT;
-import edu.washington.cs.dt.main.ImpactMain;
-import org.junit.runner.manipulation.NoTestsRemainException;
-
 /**
  * Beaware, also need to change TestRunnerWrapperFileInputs
  * */

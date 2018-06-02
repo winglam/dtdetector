@@ -16,7 +16,6 @@ import junit.framework.TestFailure;
 
 import edu.washington.cs.dt.main.ImpactMain;
 import org.junit.runner.Description;
-import org.junit.runner.manipulation.NoTestsRemainException;
 import plume.Option;
 import edu.washington.cs.dt.OneTestExecResult;
 import edu.washington.cs.dt.RESULT;

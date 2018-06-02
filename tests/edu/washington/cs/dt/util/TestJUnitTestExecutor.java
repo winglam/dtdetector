@@ -120,12 +120,14 @@ public class TestJUnitTestExecutor extends TestCase {
 
 		expectedJUnitRunner.put("edu.washington.cs.dt.samples.junit4x.ExampleBeforeClassTests.testXsHasOneItemAndAddOne", RESULT.PASS.name());
 		expectedJUnitRunner.put("edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.testX", RESULT.PASS.name());
+        // Should pass because the @BeforeClass is only run once.
 		expectedJUnitRunner.put("edu.washington.cs.dt.samples.junit4x.ExampleBeforeClassTests.testXsHasTwoItems", RESULT.PASS.name());
 
 		final Map<String, String> expectedSeparate = new HashMap<>();
 
 		expectedSeparate.put("edu.washington.cs.dt.samples.junit4x.ExampleBeforeClassTests.testXsHasOneItemAndAddOne", RESULT.PASS.name());
 		expectedSeparate.put("edu.washington.cs.dt.samples.junit4x.ExampleJunit4xTest.testX", RESULT.PASS.name());
+		// Should fail now because the @BeforeClass is run multiple times.
 		expectedSeparate.put("edu.washington.cs.dt.samples.junit4x.ExampleBeforeClassTests.testXsHasTwoItems", RESULT.ERROR.name());
 
 		// Need to clear the state between runs.
